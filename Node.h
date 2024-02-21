@@ -121,24 +121,20 @@ void Node<K,D>::firstSetData (D* newDataPtr){
 
 template<typename K, typename D>
 int Node<K,D>::getBalanceFactor() const{
-    if (this->left != nullptr && this->right != nullptr) {
+    if (this->left != nullptr && this->right != nullptr) {//2 child
         return (this->left->getHeight() - this->right->getHeight());
     }
-    if (this->left != nullptr && this->right == nullptr) {
-        return (this->left->getHeight());
+    if (this->left == nullptr && this->right != nullptr) {//right child
+        return -(this->getHeight());
     }
-    if (this->left == nullptr && this->right != nullptr) {
-        return ( this->right->getHeight());
+    if (this->left != nullptr && this->right == nullptr) {//left child
+        return (this->getHeight());
     }
-    return 0;
+    return 0;//leaf
 }
 
 
 
-int main(){
-    std::cout << "Adir";
-    return 0;
-}
 /*
 Node<int>* root = new Node<int>(21);
 
