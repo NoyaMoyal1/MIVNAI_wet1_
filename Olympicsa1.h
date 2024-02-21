@@ -16,56 +16,54 @@
 #define STREAMINGDBA1_H_
 
 #include "wet1util.h"
-#include "Country.h"
 #include "Contestant.h"
-#include "StrengthPairKey.h"
-#include "Node.h"
+#include "Country.h"
+#include "Team.h"
 #include "AVLTree.h"
-
 class Olympics {
 private:
-	//
-	// Here you may add anything you want
-	//
-	
+    AVLTree<int,Contestant>* m_contestantTree;
+    AVLTree<int,Country>* m_countryTree;
+    AVLTree<int,Team>* m_TeamTree;
+
 public:
-	// <DO-NOT-MODIFY> {
-	
-	Olympics();
+    // <DO-NOT-MODIFY> {
 
-	virtual ~Olympics();
-	
-	StatusType add_country(int countryId, int medals);
-	
-	StatusType remove_country(int countryId);
+    Olympics();
 
-	StatusType add_team(int teamId,int countryId,Sport sport);
+    virtual ~Olympics();
 
-	StatusType remove_team(int teamId);
-	
-	StatusType add_contestant(int contestantId ,int countryId,Sport sport,int strength);
-	
-	StatusType remove_contestant(int contestantId);
-	
-	StatusType add_contestant_to_team(int teamId,int contestantId);
+    StatusType add_country(int countryId, int medals);
 
-	StatusType remove_contestant_from_team(int teamId,int contestantId);
+    StatusType remove_country(int countryId);
 
-	StatusType update_contestant_strength(int contestantId ,int change);
+    StatusType add_team(int teamId,int countryId,Sport sport);
 
-	output_t<int> get_strength(int contestantId);
+    StatusType remove_team(int teamId);
 
-	output_t<int> get_medals(int countryId);
+    StatusType add_contestant(int contestantId ,int countryId,Sport sport,int strength);
 
-	output_t<int> get_team_strength(int teamId);
+    StatusType remove_contestant(int contestantId);
 
-	StatusType unite_teams(int teamId1,int teamId2);
+    StatusType add_contestant_to_team(int teamId,int contestantId);
 
-	StatusType play_match(int teamId1,int teamId2);
+    StatusType remove_contestant_from_team(int teamId,int contestantId);
 
-	output_t<int> austerity_measures(int teamId);
-	
-	// } </DO-NOT-MODIFY>
+    StatusType update_contestant_strength(int contestantId ,int change);
+
+    output_t<int> get_strength(int contestantId);
+
+    output_t<int> get_medals(int countryId);
+
+    output_t<int> get_team_strength(int teamId);
+
+    StatusType unite_teams(int teamId1,int teamId2);
+
+    StatusType play_match(int teamId1,int teamId2);
+
+    output_t<int> austerity_measures(int teamId);
+
+    // } </DO-NOT-MODIFY>
 };
 
 #endif // STREAMINGDBA1_H_

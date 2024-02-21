@@ -10,39 +10,41 @@ Olympics::~Olympics(){
 
 
 }
-
+//all done except from try catch
 StatusType Olympics::add_country(int countryId, int medals){
     if (countryId <= 0 || medals <= 0){
         return StatusType::INVALID_INPUT;
     }
-    if(this->m_countryTree->m_root->findKey(countryId) == nullptr){
+    if(this->m_countryTree->findKey(countryId, this->m_countryTree->getRoot()) == nullptr){
         return StatusType::FAILURE;
     }
     Country* newCountry = new Country(countryId,medals);
     if(newCountry == nullptr){//not sure
         return StatusType::ALLOCATION_ERROR;
     }
-    Node<Country>* node = new Node<Country>(countryId);
+    Node<int,Country>* node = new Node<int,Country>(countryId);
     if (node == nullptr){
         return StatusType::ALLOCATION_ERROR;
     }
-    node->data = newCountry;
-    this->m_countryTree->m_root->insertNode(node);
+    node->setData(newCountry);
+    this->m_countryTree->insertNodeToTree(node,this->m_countryTree->getRoot());
     return StatusType::SUCCESS;
 }
-
+//try catch???
 StatusType Olympics::remove_country(int countryId){
     if(countryId <= 0){
         return StatusType::INVALID_INPUT;
     }
-    if(this->m_countryTree->m_root->findKey(countryId) == nullptr){
+    if(this->m_countryTree->findKey(countryId, this->m_countryTree->getRoot()) == nullptr){
         return StatusType::FAILURE;
     }
-    if((this->m_countryTree->m_root->findKey(countryId)->data->get_numsContestant() != 0)
-       || (this->m_countryTree->m_root->findKey(countryId)->data->get_numsTeam() != 0)){
+    if((this->m_countryTree->findKey(countryId,this->m_countryTree->getRoot())->getData()->get_numsContestant() != 0)
+       || (this->m_countryTree->findKey(countryId,this->m_countryTree->getRoot())->getData()->get_numsTeam() != 0)){
         return StatusType::FAILURE;
     }
-    this->m_countryTree->m_root->deleteNode(this->m_countryTree->m_root, countryId);
+    delete this->m_countryTree->findKey(countryId,this->m_countryTree->getRoot())->getData();
+    this->m_countryTree->findKey(countryId,this->m_countryTree->getRoot())->setData(nullptr);
+    this->m_countryTree->DeleteNodeFromTree(this->m_countryTree->getRoot(),countryId);
     return StatusType::SUCCESS;
 }
 
@@ -53,42 +55,44 @@ StatusType Olympics::add_team(int teamId,int countryId,Sport sport){
 StatusType Olympics::remove_team(int teamId){
     return StatusType::FAILURE;
 }
-
+//try catchhhhhhh
 StatusType Olympics::add_contestant(int contestantId ,int countryId,Sport sport,int strength){
     if (countryId <= 0 || contestantId <= 0 || strength < 0){
         return StatusType::INVALID_INPUT;
     }
-    if(this->m_contastantTree->m_root->findKey(contestantId) != nullptr){
+    if(this->m_contestantTree->findKey(contestantId,this->m_contestantTree->getRoot()) != nullptr){
         return StatusType::FAILURE;
     }
-    if(this->m_countryTree->m_root->findKey(countryId) == nullptr){
+    if(this->m_countryTree->findKey(countryId,this->m_countryTree->getRoot()) == nullptr){
         return StatusType::FAILURE;
     }
-    Country* curr = this->m_countryTree->m_root->findKey(countryId)->data;
+    Country* curr = this->m_countryTree->findKey(countryId,this->m_countryTree->getRoot())->getData();
     Contestant* newContestant = new Contestant(contestantId, curr, sport,strength);
     if(newContestant == nullptr){//not sure
         return StatusType::ALLOCATION_ERROR;
     }
-    Node<Contestant>* node = new Node<Contestant>(contestantId);
+    Node<int,Contestant>* node = new Node<int,Contestant>(contestantId);
     if (node == nullptr){
         return StatusType::ALLOCATION_ERROR;
     }
-    node->data = newContestant;
-    this->m_contastantTree->m_root->insertNode(node);
+    node->setData(newContestant);
+    this->m_contestantTree->insertNodeToTree(node,this->m_contestantTree->getRoot());
     return StatusType::SUCCESS;
 }
-
+//try catch
 StatusType Olympics::remove_contestant(int contestantId){
     if (contestantId <= 0){
         return StatusType::INVALID_INPUT;
     }
-    if (this->m_contastantTree->m_root->findKey(contestantId) == nullptr){
+    if (this->m_contestantTree->findKey(contestantId, this->m_contestantTree->getRoot()) == nullptr){
         return StatusType::FAILURE;
     }
-    if (this->m_contastantTree->m_root->findKey(contestantId)->data->get_numTeam() > 0){
+    if (this->m_contestantTree->findKey(contestantId,m_contestantTree->getRoot())->getData()->get_numTeam() > 0){
         return StatusType::FAILURE;
     }
-    this->m_contastantTree->m_root->deleteNode(this->m_contastantTree->m_root, contestantId);
+    delete m_contestantTree->findKey(contestantId,m_contestantTree->getRoot())->getData();
+    m_contestantTree->findKey(contestantId,m_contestantTree->getRoot())->setData(nullptr);
+    m_contestantTree->DeleteNodeFromTree(m_contestantTree->getRoot(),contestantId);
     return StatusType::SUCCESS;
 }
 
@@ -147,7 +151,7 @@ StatusType Olympics::update_contestant_strength(int contestantId ,int change){
             teamNode->getData()->getRightTreeStrength()->DeleteNodeFromTree(currRootRight, oldKey);
             teamNode->getData()->getRightTreeStrength()->insertNodeToTree(newStrengthNode, currRootRight);
         }
-        //looking for the strength in middle tree
+            //looking for the strength in middle tree
         else if (oldStrengthNodeMiddle != nullptr) {
             teamNode->getData()->getMiddleTreeStrength()->DeleteNodeFromTree(currRootMiddle, oldKey);
             teamNode->getData()->getMiddleTreeStrength()->insertNodeToTree(newStrengthNode, currRootMiddle);
@@ -163,20 +167,20 @@ output_t<int> Olympics::get_strength(int contestantId){
     if (contestantId <= 0){
         return StatusType::FAILURE;
     }
-    if (this->m_contastantTree->m_root->findKey(contestantId) == nullptr){
+    if (m_contestantTree->findKey(contestantId,m_contestantTree->getRoot()) == nullptr){
         return StatusType::FAILURE;
     }
-    return this->m_contastantTree->m_root->findKey(contestantId)->data->get_strength();
+    return m_contestantTree->findKey(contestantId,m_contestantTree->getRoot())->getData()->get_strength();
 }
 
 output_t<int> Olympics::get_medals(int countryId){
     if (countryId <= 0){
         return StatusType::FAILURE;
     }
-    if (this->m_countryTree->m_root->findKey(countryId) == nullptr){
+    if (this->m_countryTree->findKey(countryId,m_countryTree->getRoot()) == nullptr){
         return StatusType::FAILURE;
     }
-    return this->m_countryTree->m_root->findKey(countryId)->data->get_medals();
+    return m_countryTree->findKey(countryId,m_countryTree->getRoot())->getData()->get_medals();
 
 }
 
@@ -196,14 +200,13 @@ output_t<int> Olympics::austerity_measures(int teamId){
     if (teamId <= 0){
         return StatusType::INVALID_INPUT;
     }
-    if(this->m_TeamTree->m_root->findKey(teamId) == nullptr){
+    if(m_TeamTree->findKey(teamId,m_TeamTree->getRoot()) == nullptr){
         return StatusType::FAILURE;
     }
-    if(this->m_TeamTree->m_root->findKey(teamId)->data->m_numOfContestant < 3){
+    if(  m_TeamTree->findKey(teamId,m_TeamTree->getRoot())->getData()->getNumOfContestant() < 3){
         return StatusType::FAILURE;
     }
 
     return 0;
 }
-
 

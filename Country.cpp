@@ -13,3 +13,20 @@ int Country::get_numsTeam(){
 int Country::get_numsContestant(){
     return this->m_numOfContestant;
 }
+
+
+void Country::countryWonMedal(){
+    m_medals++;
+}
+void Country::removeOneTeam(){
+    m_numOfTeams--;
+}
+void Country::removeOneContestant(){
+    m_numOfContestant--;
+}
+void Country::addOneTeam(){
+    m_numOfTeams++;
+}
+void Country::addOneContestant(){
+    m_numOfContestant++;
+}

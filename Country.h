@@ -16,6 +16,12 @@ public:
     int get_medals();
     int get_numsTeam();
     int get_numsContestant();
+
+    void countryWonMedal();
+    void removeOneTeam();
+    void removeOneContestant();
+    void addOneTeam();
+    void addOneContestant();
 };
 
 
