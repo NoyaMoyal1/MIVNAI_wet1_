@@ -35,6 +35,14 @@ private:
         m_rightTreeStrength = new AVLTree<StrengthPairKey,StrengthInfo>();
     }
 
+    AVLTree<StrengthPairKey,StrengthInfo>* getLeftTreeStrength();
+    AVLTree<StrengthPairKey,StrengthInfo>* getRightTreeStrength();
+    AVLTree<StrengthPairKey,StrengthInfo>* getMiddleTreeStrength();
+    AVLTree<int,Contestant>* getLeftTreeID();
+    AVLTree<int,Contestant>* getRightTreeID();
+    AVLTree<int,Contestant>* getMiddleTreeID();
+    int getNumOfContestant ();
+
     void calcAusterity();
     int calcAusterity1();
 
@@ -42,6 +50,30 @@ private:
     void evenTeamsTrees ();
     void addContestantToChosenTeam(Node<int,Contestant>* nodeToAdd,Node<StrengthPairKey,StrengthInfo>* strengthNode );
 };
+int Team::getNumOfContestant (){
+    return m_numOfContestant;
+}
+
+AVLTree<StrengthPairKey,StrengthInfo>* Team::getLeftTreeStrength(){
+    return m_leftTreeStrength;
+}
+AVLTree<StrengthPairKey,StrengthInfo>* Team::getRightTreeStrength(){
+    return m_rightTreeStrength;
+}
+AVLTree<StrengthPairKey,StrengthInfo>* Team::getMiddleTreeStrength(){
+    return m_middleTreeStrength;
+}
+
+AVLTree<int,Contestant>* Team::getLeftTreeID() {
+    return m_leftTreeID;
+}
+AVLTree<int,Contestant>* Team::getRightTreeID(){
+    return m_rightTreeID;
+}
+AVLTree<int,Contestant>* Team::getMiddleTreeID(){
+    return m_middleTreeID;
+}
+
 
 void Team::calcStrength(){
     int sumOfTrees = (m_leftTreeID->getNodeCount() + m_rightTreeID->getNodeCount()+m_middleTreeID->getNodeCount());
