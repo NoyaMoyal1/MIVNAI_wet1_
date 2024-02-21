@@ -16,6 +16,11 @@
 #define STREAMINGDBA1_H_
 
 #include "wet1util.h"
+#include "Country.h"
+#include "Contestant.h"
+#include "StrengthPairKey.h"
+#include "Node.h"
+#include "AVLTree.h"
 
 class Olympics {
 private:

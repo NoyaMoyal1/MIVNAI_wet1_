@@ -6,10 +6,12 @@ template <typename K, typename D>
 class AVLTree {
 private:
     Node<K,D>* m_root;
+    int m_nodeCount=0;
 
 public:
     //constructor
     explicit AVLTree(K rootKey): m_root(new Node<K,D>(rootKey)){}
+    AVLTree(): m_root(nullptr), m_nodeCount(0){}
 
     //destructor - when removing template class , first destruct the template and then the node
     virtual~ AVLTree(){
@@ -21,12 +23,17 @@ public:
     Node<K,D>* LRRotation(Node<K,D>* node);
     Node<K,D>* RLRotation(Node<K,D>* node);
 
+    Node<K,D>* getMaxOfTree ();
+    Node<K,D>* getMinOfTree ();
+
     Node<K,D>* balance(Node<K,D>* unbalancedNode);
     Node<K,D>* findKey(int key, Node<K,D>* curRoot) const;
     Node<K,D>* insertNodeToTree(Node<K,D>* Newnode, Node<K,D>* currRoot);
     Node<K,D>* DeleteNodeFromTree(Node<K,D>* currRoot, K key);
     Node<K,D>* getRoot();
     void setRoot(Node<K,D>* newRoot);
+    int getNodeCount() const;
+
 
     void preOrderPrint(Node<K,D>* root);
 };
@@ -44,6 +51,7 @@ Node<K,D>* AVLTree<K,D>::insertNodeToTree(Node<K,D>* Newnode, Node<K,D>* currRoo
     if(currRoot->getKey() < Newnode->getKey()){
         if(currRoot->getRight() == nullptr){
             currRoot->setRight(Newnode);
+            m_nodeCount++;
             currRoot->setHeight(currRoot->getHeight());
             //height = max(left->getHeight(), right->getHeight())+1;
             return currRoot;
@@ -55,6 +63,7 @@ Node<K,D>* AVLTree<K,D>::insertNodeToTree(Node<K,D>* Newnode, Node<K,D>* currRoo
     if(currRoot->getKey() > Newnode->getKey()){
         if (currRoot->getLeft() == nullptr){
             currRoot->setLeft(Newnode);
+            m_nodeCount++;
             currRoot->setHeight(currRoot->getHeight());
             return currRoot;
         }
@@ -70,6 +79,26 @@ Node<K,D>* AVLTree<K,D>::insertNodeToTree(Node<K,D>* Newnode, Node<K,D>* currRoo
     return currRoot;
 }
 
+template <typename K, typename D>
+Node<K,D>* AVLTree<K,D>::insertNodeToTree(Node<K,D>* newNode, Node<K,D>* currRoot) {
+    if(currRoot == nullptr) {
+        m_nodeCount++;
+        newNode->setHeight(0);
+        return newNode;
+    }
+
+    if(currRoot->getKey() < newNode->getKey()) {
+        currRoot->setRight(insertNodeToTree(newNode, currRoot->getRight()));
+    }
+    else if(currRoot->getKey()> newNode->getKey()) {
+        currRoot->setLeft(insertNodeToTree(newNode, currRoot->getLeft()));
+    }
+
+    // update height
+    currRoot->setHeight( max(currRoot->getLeft()->getHeight(), currRoot->getRight()->getHeight()) +1 );
+
+    return balance(currRoot);
+}
 template <typename K, typename D>
 Node<K,D>* AVLTree<K,D>::balance(Node<K,D>* unbalancedNode){
     if(unbalancedNode->getBalanceFactor() == 2){
@@ -142,6 +171,7 @@ Node<K,D>* AVLTree<K,D>::DeleteNodeFromTree(Node<K,D>* currRoot, K key) {
             currRoot->setData(temp->getData());
             currRoot->setRight(this->DeleteNodeFromTree(currRoot->getRight(), temp->getKey()));
         }
+        m_nodeCount--;
     }
     // Update height of the current node
     currRoot->setHeight(currRoot->getHeight());
@@ -188,6 +218,31 @@ Node<K,D>* AVLTree<K,D>::RLRotation(Node<K,D>* node){
 
 
 template <typename K, typename D>
+Node<K,D>* AVLTree<K,D>::getMaxOfTree (){
+    Node<K,D>* temp = m_root;
+    while (temp != nullptr ){
+        if (temp->getRight() == nullptr){
+            return temp;
+        }
+        temp=temp->getRight();
+    }
+    return nullptr ; //if the tree is empty
+}
+
+template <typename K, typename D>
+Node<K,D>* AVLTree<K,D>::getMinOfTree (){
+    Node<K,D>* temp = m_root;
+    while (temp != nullptr ){
+        if (temp->getLeft() == nullptr){
+            return temp;
+        }
+        temp=temp->getLeft();
+    }
+    return nullptr ; //if the tree is empty
+}
+
+
+template <typename K, typename D>
 void AVLTree<K,D>::preOrderPrint(Node<K,D>* root){
     if(root != nullptr)
     {
@@ -195,6 +250,12 @@ void AVLTree<K,D>::preOrderPrint(Node<K,D>* root){
         this->preOrderPrint(root->getLeft());
         this->preOrderPrint(root->getRight());
     }
+}
+
+
+template <typename K, typename D>
+int AVLTree<K,D>::getNodeCount() const{
+    return m_nodeCount;
 }
 
 #endif //MIVNAI_WET1_NEW_AVLTREE_H
