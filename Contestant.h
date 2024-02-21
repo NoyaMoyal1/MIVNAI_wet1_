@@ -13,7 +13,6 @@ private:
     int m_contestantID;
     Country* m_countryPtr;
     Sport m_sport;
-    int m_strength;
     int m_teamArray[THREE] ;
     StrengthInfo* m_strengthInfo;
     int m_numOfCurrTeams;
@@ -31,8 +30,8 @@ public:
     int* get_teamsArr();//?
     int get_numTeam();
     int get_strength();
+    StrengthInfo* getStrengthInfo();
     void set_strength(int power);
-    void changeStrengthInfo(int teamId);
 };
 
 
