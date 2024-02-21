@@ -88,7 +88,7 @@ Node<K,D>* AVLTree<K,D>::balance(Node<K,D>* unbalancedNode){
 //find key in AVL tree and return a pointer to it
 template <typename K, typename D>
 Node<K,D>* AVLTree<K,D>::findKey(K key, Node<K,D>* curRoot) const{
-    if (key == curRoot->getKey()){
+    if (curRoot != nullptr && key == curRoot->getKey()){
         return curRoot;
     }
     else if (key < curRoot->getKey() && curRoot->getLeft() != nullptr){

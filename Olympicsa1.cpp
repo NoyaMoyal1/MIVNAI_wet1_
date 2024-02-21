@@ -193,7 +193,26 @@ StatusType Olympics::unite_teams(int teamId1,int teamId2){
 }
 
 StatusType Olympics::play_match(int teamId1,int teamId2){
-    return StatusType::FAILURE;
+    if (teamId1 <= 0 || teamId2 <= 0 || teamId1 == teamId2){
+        return StatusType::INVALID_INPUT;
+    }
+    if (m_TeamTree->findKey(teamId1, m_TeamTree->getRoot()) == nullptr || m_TeamTree->findKey(teamId2, m_TeamTree->getRoot()) == nullptr){
+        return StatusType::FAILURE;
+    }
+    if(m_TeamTree->findKey(teamId1, m_TeamTree->getRoot())->getData()->getSport() != m_TeamTree->findKey(teamId2, m_TeamTree->getRoot())->getData()->getSport()){
+        return StatusType::FAILURE;
+    }
+    int medalT1 = m_TeamTree->findKey(teamId1, m_TeamTree->getRoot())->getData()->getCountry()->get_medals();
+    int medalT2 = m_TeamTree->findKey(teamId2, m_TeamTree->getRoot())->getData()->getCountry()->get_medals();
+    int pointTeam1 = medalT1 + get_team_strength(teamId1).ans();
+    int pointTeam2 = medalT2 + get_team_strength(teamId1).ans();
+    if(medalT1 > medalT1){
+        m_TeamTree->findKey(teamId1, m_TeamTree->getRoot())->getData()->getCountry()->addOneTeam();
+    }
+    if (medalT2 > medalT1){
+        m_TeamTree->findKey(teamId2, m_TeamTree->getRoot())->getData()->getCountry()->addOneTeam();
+    }
+    return StatusType::SUCCESS;
 }
 
 output_t<int> Olympics::austerity_measures(int teamId){

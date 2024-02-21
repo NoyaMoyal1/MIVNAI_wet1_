@@ -12,8 +12,8 @@ private:
 public:
     StrengthInfo(int strength);
     void setTree(char subTree);
-    void setStrength(int strength);
-    int getStrength();
+    void setStrengthFromInfo(int strength);
+    int getStrengthFromInfo();
 };
 
 

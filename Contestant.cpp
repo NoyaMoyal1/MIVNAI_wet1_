@@ -1,7 +1,3 @@
-//
-// Created by noyam on 21/02/2024.
-//
-
 #include "Contestant.h"
 
 Contestant::Contestant(int contestantID, Country* countryPtr, Sport sport, int strength):
@@ -30,6 +26,12 @@ int Contestant::get_numTeam(){
     return m_numOfCurrTeams;
 }
 
-void Contestant::changeStrengthInfo(int newStrength){
-    m_strengthInfo->setStrength(newStrength);
+int Contestant::get_strength(){
+    return m_strengthInfo->getStrengthFromInfo();
+}
+void Contestant::set_strength(int newStrength){
+    m_strengthInfo->setStrengthFromInfo(newStrength);
+}
+StrengthInfo* Contestant::getStrengthInfo(){
+    return m_strengthInfo;
 }

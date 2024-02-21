@@ -1,4 +1,5 @@
 
+
 #ifndef TRY2_COPY_CONTESTANT_H
 #define TRY2_COPY_CONTESTANT_H
 
@@ -29,8 +30,8 @@ public:
     int* get_teamsArr();//?
     int get_numTeam();
     int get_strength();
+    StrengthInfo* getStrengthInfo();
     void set_strength(int power);
-    void changeStrengthInfo(int teamId);
 };
 
 

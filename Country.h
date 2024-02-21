@@ -7,6 +7,7 @@
 #include "wet1util.h"
 
 class Country {
+
     int m_countryID;
     int m_medals;
     int m_numOfTeams;
@@ -18,7 +19,14 @@ public:
     int get_medals();
     int get_numsTeam();
     int get_numsContestant();
+
+    void countryWonMedal();
+    void removeOneTeam();
+    void removeOneContestant();
+    void addOneTeam();
+    void addOneContestant();
 };
+
 
 
 
