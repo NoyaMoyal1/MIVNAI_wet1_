@@ -82,16 +82,16 @@ bool Node<K,D>::isSameKey (const Node other) const {
 //changedddddddddddddddddddd
 template<typename K, typename D>
 int Node<K,D>::getHeight() const {
-    if(left == nullptr && right == nullptr){
+    if(this->left == nullptr && this->right == nullptr){
         return 0;
     }
-    if(left == nullptr){
-        return 1 + right->height;
+    if(this->left == nullptr){
+        return 1 + this->right->height;
     }
-    if(right == nullptr){
-        return 1+ left->height;
+    if(this->right == nullptr){
+        return 1+ this->left->height;
     }
-    return 1 + max(left->height , right->height);
+    return 1 + max(this->left->height , this->right->height);
 }
 
 template<typename K, typename D>
@@ -121,22 +121,21 @@ void Node<K,D>::firstSetData (D* newDataPtr){
 
 template<typename K, typename D>
 int Node<K,D>::getBalanceFactor() const{
-    if (left != nullptr && right != nullptr) {
-        return (left->getHeight() - right->getHeight());
+    if (this->left != nullptr && this->right != nullptr) {//2 child
+        return (this->left->getHeight() - this->right->getHeight());
     }
-    if (left != nullptr && right == nullptr) {
-        return (left->getHeight()+1);
+    if (this->left == nullptr && this->right != nullptr) {//right child
+        return -(this->getHeight());
     }
-    if (left == nullptr && right != nullptr) {
-        return ( right->getHeight()+1);
+    if (this->left != nullptr && this->right == nullptr) {//left child
+        return (this->getHeight());
     }
-    return 0;
+    return 0;//leaf
 }
 
 
-/*
-int main(){
 
+/*
 Node<int>* root = new Node<int>(21);
 
 Node<int>* a = new Node<int>(23);
