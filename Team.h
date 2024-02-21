@@ -46,7 +46,9 @@ public:
     void calcAusterity();
     int calcAusterity1();
 
-    void calcStrength();
+    int calcStrength();
+    void setTeamStrength(int strength);
+
     void evenTeamsTrees ();
     void addContestantToChosenTeam(Node<int,Contestant>* nodeToAdd,Node<StrengthPairKey,StrengthInfo>* strengthNode );
 };
@@ -75,19 +77,21 @@ AVLTree<int,Contestant>* Team::getMiddleTreeID(){
 }
 
 
-void Team::calcStrength(){
+int Team::calcStrength(){
     int sumOfTrees = (m_leftTreeID->getNodeCount() + m_rightTreeID->getNodeCount()+m_middleTreeID->getNodeCount());
     if (sumOfTrees == 0 ) {
-        m_teamStrength = 0;
-        return;
+        return 0;
     }
     if (sumOfTrees % 3 == 0 ){
-        int rightMax = m_rightTreeStrength->getMaxOfTree()->getData()->getStrength();
-        int middleMax = m_middleTreeStrength->getMaxOfTree()->getData()->getStrength();
-        int leftMax = m_leftTreeStrength->getMaxOfTree()->getData()->getStrength();
-        m_teamStrength = rightMax+middleMax+leftMax;
+        int rightMax = m_rightTreeStrength->getMaxOfTree()->getData()->getStrengthFromInfo();
+        int middleMax = m_middleTreeStrength->getMaxOfTree()->getData()->getStrengthFromInfo();
+        int leftMax = m_leftTreeStrength->getMaxOfTree()->getData()->getStrengthFromInfo();
+        return (rightMax+middleMax+leftMax);
     }
-    else m_teamStrength = 0;
+    else return 0;
+}
+void Team::setTeamStrength(int strength){
+    m_teamStrength=strength;
 }
 
 
@@ -116,8 +120,7 @@ void Team::addContestantToChosenTeam(Node<int,Contestant>* nodeToAdd,Node<Streng
             strengthNode->getData()->setTree('M');
         }
         evenTeamsTrees();
-        calcStrength();
-
+        setTeamStrength(calcStrength());
     }
 }
 
