@@ -12,7 +12,6 @@ private:
     int m_contestantID;
     Country* m_countryPtr;
     Sport m_sport;
-    int m_strength;
     int m_teamArray[THREE] ;
     StrengthInfo* m_strengthInfo;
     int m_numOfCurrTeams;

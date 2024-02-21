@@ -218,4 +218,25 @@ Node<K,D>* AVLTree<K,D>::getMinOfTree (){
     }
     return nullptr ; //if the tree is empty
 }
+//make an empty tree postorder
+template <typename K, typename D>
+Node<K,D>* emptyTree(int size){
+    if (size <= 0){
+        return nullptr;
+    }
+    int leftTree = size/2;
+    int rightTree = size - leftTree;
+    Node<K,D>* curr = new Node<K,D>();
+    curr->left = emptyTree<K,D>(leftTree);
+    curr->right = emptyTree<K,D>(rightTree);
+    curr->height = 1 + max(curr->left->height , curr->right->height);
+    return curr;
+}
+
+int x=2;
+while (x+1<n){
+x= x*2;
+}
+
+
 #endif //MIVNAI_WET1_NEW_AVLTREE_H

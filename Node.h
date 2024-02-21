@@ -8,7 +8,7 @@
 template <typename K, typename D>
 class Node {
 private:
-    K key ;
+    K key;
     D *data;
     Node *left;
     Node *right;
@@ -16,6 +16,7 @@ private:
 
 public:
 //constructor
+    Node(): key(NULL), data(nullptr), left(nullptr), right(nullptr), height(0) {}
     explicit Node(K key): key(key), data(nullptr), left(nullptr), right(nullptr), height(0) {}
     Node(K key, D* data): key(key), data(data), left(nullptr), right(nullptr), height(0) {}
 
@@ -23,8 +24,6 @@ public:
     Node(Node<K, D>* nodePtr): key(nodePtr->key), data(nodePtr->data), left(nodePtr->left), right(nodePtr->right), height(nodePtr->height) {}
 //destructor - when removing template class , first destruct the template and then the node
     virtual~ Node(){
-        delete data;
-        data = nullptr;
         delete left;
         left = nullptr;
         delete right;
