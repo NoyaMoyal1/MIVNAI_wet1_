@@ -77,23 +77,17 @@ void Team::addContestantToChosenTeam(Node<int,Contestant>* nodeToAdd,Node<Streng
             //belong to the right tree
         else if (nodeToAdd->getKey() > rightMin) {
             m_rightTreeID->insertNodeToTree(nodeToAdd, m_rightTreeID->getRoot());
-            /*
-          SET THE CHAR IN STRENGTH INFO TO CORRECT PLACE
-
-           */
-            strengthNode->getData()->setTree('R');
             m_rightTreeStrength->insertNodeToTree(strengthNode,m_rightTreeStrength->getRoot());
+            strengthNode->getData()->setTree('R');
         } else {
             // Node belongs to the middle tree
             m_middleTreeID->insertNodeToTree(nodeToAdd, m_middleTreeID->getRoot());
-            /*
-        SET THE CHAR IN STRENGTH INFO TO CORRECT PLACE
-         */
-            strengthNode->getData()->setTree('M');
             m_middleTreeStrength->insertNodeToTree(strengthNode, m_middleTreeStrength->getRoot());
+            strengthNode->getData()->setTree('M');
         }
         evenTeamsTrees();
         calcStrength();
+
     }
 }
 
@@ -112,29 +106,52 @@ void Team::evenTeamsTrees () {
         if (rightCount > middleCount + 1) {
             // Move the min node from the right tree to the middle tree
             Node<int, Contestant> *oldMinNode = m_rightTreeID->getMinOfTree();
-            m_middleTreeID->insertNodeToTree(oldMinNode, m_middleTreeID->getRoot());
-            m_rightTreeID->DeleteNodeFromTree(m_rightTreeID->getRoot(), oldMinNode->getKey());
+            Node<int, Contestant> *newMaxNode = new Node<int, Contestant>(oldMinNode->getKey(), oldMinNode->getData());
 
-            //now same to strength NEED TO IMPLEMENT
+            m_rightTreeID->DeleteNodeFromTree(m_rightTreeID->getRoot(), oldMinNode->getKey());
+            m_middleTreeID->insertNodeToTree(newMaxNode, m_middleTreeID->getRoot());
+
+            StrengthPairKey key = StrengthPairKey(newMaxNode->getData()->get_strength(), newMaxNode->getKey());
+            Node<StrengthPairKey,StrengthInfo> *strengthNode = m_rightTreeStrength->findKey(key, m_rightTreeStrength->getRoot());
+            Node<StrengthPairKey,StrengthInfo> *newStrengthNode = new Node<StrengthPairKey,StrengthInfo> (key , strengthNode->getData());
+
+            m_rightTreeStrength->DeleteNodeFromTree(m_rightTreeStrength->getRoot(), key);
+            m_middleTreeStrength->insertNodeToTree( newStrengthNode,m_rightTreeStrength->getRoot());
 
             continue;
         }
         if (leftCount > middleCount + 1) {
             // Move the max node from the left tree to the middle tree
-            Node<int, Contestant> *oldMinNode = m_leftTreeID->getMaxOfTree();
-            m_middleTreeID->insertNodeToTree(oldMinNode, m_middleTreeID->getRoot());
-            m_leftTreeID->DeleteNodeFromTree(m_leftTreeID->getRoot(), oldMinNode->getKey());
 
-            //now same to strength NEED TO IMPLEMENT
+            Node<int, Contestant> *oldMaxNode = m_leftTreeID->getMaxOfTree();
+            Node<int, Contestant> *newMinNode = new Node<int, Contestant>(oldMaxNode->getKey(), oldMaxNode->getData());
+
+            m_leftTreeID->DeleteNodeFromTree(m_leftTreeID->getRoot(), oldMaxNode->getKey());
+            m_middleTreeID->insertNodeToTree(newMinNode, m_middleTreeID->getRoot());
+
+            StrengthPairKey key = StrengthPairKey(newMinNode->getData()->get_strength(), newMinNode->getKey());
+            Node<StrengthPairKey,StrengthInfo> *strengthNode = m_leftTreeStrength->findKey(key, m_leftTreeStrength->getRoot());
+            Node<StrengthPairKey,StrengthInfo> *newStrengthNode = new Node<StrengthPairKey,StrengthInfo> (key , strengthNode->getData());
+
+            m_leftTreeStrength->DeleteNodeFromTree(m_leftTreeStrength->getRoot(), key);
+            m_middleTreeStrength->insertNodeToTree( newStrengthNode,m_middleTreeStrength->getRoot());
             continue;
         }
         if (middleCount > rightCount + 1) {
             // Move the max node from the middle tree to the right tree
-            Node<int, Contestant> *oldMinNode = m_middleTreeID->getMaxOfTree();
-            m_rightTreeID->insertNodeToTree(oldMinNode, m_rightTreeID->getRoot());
-            m_middleTreeID->DeleteNodeFromTree(m_middleTreeID->getRoot(), oldMinNode->getKey());
+            Node<int, Contestant> *oldMaxNode = m_leftTreeID->getMaxOfTree();
+            Node<int, Contestant> *newMinNode = new Node<int, Contestant>(oldMaxNode->getKey(), oldMaxNode->getData());
 
-            //now same to strength NEED TO IMPLEMENT
+            m_leftTreeID->DeleteNodeFromTree(m_leftTreeID->getRoot(), oldMaxNode->getKey());
+            m_middleTreeID->insertNodeToTree(newMinNode, m_middleTreeID->getRoot());
+
+            StrengthPairKey key = StrengthPairKey(newMinNode->getData()->get_strength(), newMinNode->getKey());
+            Node<StrengthPairKey,StrengthInfo> *strengthNode = m_leftTreeStrength->findKey(key, m_leftTreeStrength->getRoot());
+            Node<StrengthPairKey,StrengthInfo> *newStrengthNode = new Node<StrengthPairKey,StrengthInfo> (key , strengthNode->getData());
+
+            m_leftTreeStrength->DeleteNodeFromTree(m_leftTreeStrength->getRoot(), key);
+            m_middleTreeStrength->insertNodeToTree( newStrengthNode,m_middleTreeStrength->getRoot());
+
             continue;
         }
         if (middleCount > leftCount + 1) {

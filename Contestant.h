@@ -11,7 +11,7 @@ private:
     Country* m_countryPtr;
     Sport m_sport;
     int m_strength;
-    int m_teamArray[THREE] = {0};
+    int m_teamArray[THREE] ;
     StrengthInfo* m_strengthInfo;
     int m_numOfCurrTeams;
 
@@ -19,7 +19,11 @@ private:
 public:
     Contestant(int contestantID, Country* countryPtr, Sport sport, int strength):
         m_contestantID(contestantID), m_countryPtr(countryPtr), m_sport(sport), m_strength(strength)
-        ,m_strengthInfo(new StrengthInfo(m_strength)),m_numOfCurrTeams(0) {}
+        ,m_strengthInfo(new StrengthInfo(m_strength)),m_numOfCurrTeams(0) {
+        for (int i = 0; i < THREE ; ++i) {
+            m_teamArray[i] = -1;
+        }
+    }
 
     ~Contestant() {
         delete m_strengthInfo;

@@ -27,7 +27,7 @@ public:
     Node<K,D>* getMinOfTree ();
 
     Node<K,D>* balance(Node<K,D>* unbalancedNode);
-    Node<K,D>* findKey(int key, Node<K,D>* curRoot) const;
+    Node<K,D>* findKey(K k , Node<K,D>* curRoot) const;
     Node<K,D>* insertNodeToTree(Node<K,D>* Newnode, Node<K,D>* currRoot);
     Node<K,D>* DeleteNodeFromTree(Node<K,D>* currRoot, K key);
     Node<K,D>* getRoot();
@@ -122,7 +122,7 @@ Node<K,D>* AVLTree<K,D>::balance(Node<K,D>* unbalancedNode){
 
 //find key in AVL tree and return a pointer to it
 template <typename K, typename D>
-Node<K,D>* AVLTree<K,D>::findKey(int key, Node<K,D>* curRoot) const{
+Node<K,D>* AVLTree<K,D>::findKey(K key, Node<K,D>* curRoot) const{
     if (key == curRoot->getKey()){
         return curRoot;
     }
