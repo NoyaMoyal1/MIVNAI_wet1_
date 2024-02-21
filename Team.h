@@ -18,6 +18,7 @@ private:
     AVLTree<StrengthPairKey,StrengthInfo>* m_leftTreeStrength;
     AVLTree<StrengthPairKey,StrengthInfo>* m_middleTreeStrength;
     AVLTree<StrengthPairKey,StrengthInfo>* m_rightTreeStrength;
+public:
     Team(int teamID, Country* countryPtr, Sport sport):
             m_teamID(teamID), m_countryPtr(countryPtr) , m_sport(sport),
             m_leftTreeID(nullptr), m_middleTreeID(nullptr), m_rightTreeID(nullptr),
@@ -30,7 +31,7 @@ private:
         m_middleTreeStrength = new AVLTree<StrengthPairKey,StrengthInfo>();
         m_rightTreeStrength = new AVLTree<StrengthPairKey,StrengthInfo>();
     }
-public:
+
     AVLTree<StrengthPairKey,StrengthInfo>* getLeftTreeStrength();
     AVLTree<StrengthPairKey,StrengthInfo>* getRightTreeStrength();
     AVLTree<StrengthPairKey,StrengthInfo>* getMiddleTreeStrength();
