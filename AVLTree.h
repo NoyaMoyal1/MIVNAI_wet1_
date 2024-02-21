@@ -6,10 +6,11 @@ template <typename K, typename D>
 class AVLTree {
 private:
     Node<K,D>* m_root;
+    int m_nodeCount;
 
 public:
     //constructor
-    explicit AVLTree(K rootKey): m_root(new Node<K,D>(rootKey)){}
+    AVLTree(): m_root(nullptr), m_nodeCount(0){}
 
     //destructor - when removing template class , first destruct the template and then the node
     virtual~ AVLTree(){
@@ -20,9 +21,12 @@ public:
     Node<K,D>* leftRotation(Node<K,D>* node);
     Node<K,D>* LRRotation(Node<K,D>* node);
     Node<K,D>* RLRotation(Node<K,D>* node);
+    Node<K,D>* getMaxOfTree ();
+    Node<K,D>* getMinOfTree ();
+    int getNodeCount() const;
 
     Node<K,D>* balance(Node<K,D>* unbalancedNode);
-    Node<K,D>* findKey(int key, Node<K,D>* curRoot) const;
+    Node<K,D>* findKey(K key, Node<K,D>* curRoot) const;
     Node<K,D>* insertNodeToTree(Node<K,D>* Newnode, Node<K,D>* currRoot);
     Node<K,D>* DeleteNodeFromTree(Node<K,D>* currRoot, K key);
     Node<K,D>* getRoot();
@@ -40,34 +44,24 @@ void AVLTree<K,D>::setRoot(Node<K,D>* newRoot){
 }
 // Assume we got a valid input that isn't already in the tree - NEED TO CHECK OUTSIDE IN THE ADD FUNCTION!!
 template <typename K, typename D>
-Node<K,D>* AVLTree<K,D>::insertNodeToTree(Node<K,D>* Newnode, Node<K,D>* currRoot){
-    if(currRoot->getKey() < Newnode->getKey()){
-        if(currRoot->getRight() == nullptr){
-            currRoot->setRight(Newnode);
-            currRoot->setHeight(currRoot->getHeight());
-            //height = max(left->getHeight(), right->getHeight())+1;
-            return currRoot;
-        }
-        else{
-            currRoot->setRight(this->insertNodeToTree(Newnode, currRoot->getRight()));
-        }
+Node<K,D>* AVLTree<K,D>::insertNodeToTree(Node<K,D>* newNode, Node<K,D>* currRoot) {
+    if(currRoot == nullptr) {
+        m_nodeCount++;
+        newNode->setHeight(0);
+        return newNode;
     }
-    if(currRoot->getKey() > Newnode->getKey()){
-        if (currRoot->getLeft() == nullptr){
-            currRoot->setLeft(Newnode);
-            currRoot->setHeight(currRoot->getHeight());
-            return currRoot;
-        }
-        else{
-            currRoot->setLeft(this->insertNodeToTree(Newnode, currRoot->getLeft()));
-        }
+
+    if(currRoot->getKey() < newNode->getKey()) {
+        currRoot->setRight(insertNodeToTree(newNode, currRoot->getRight()));
     }
-    currRoot->setHeight(currRoot->getHeight());
-    int balanceFactor = currRoot->getBalanceFactor();
-    if (balanceFactor == -2 || balanceFactor == 2){
-        return balance(currRoot);
+    else if(currRoot->getKey()> newNode->getKey()) {
+        currRoot->setLeft(insertNodeToTree(newNode, currRoot->getLeft()));
     }
-    return currRoot;
+
+    // update height
+    currRoot->setHeight( currRoot->getHeight() );
+
+    return balance(currRoot);
 }
 
 template <typename K, typename D>
@@ -93,7 +87,7 @@ Node<K,D>* AVLTree<K,D>::balance(Node<K,D>* unbalancedNode){
 
 //find key in AVL tree and return a pointer to it
 template <typename K, typename D>
-Node<K,D>* AVLTree<K,D>::findKey(int key, Node<K,D>* curRoot) const{
+Node<K,D>* AVLTree<K,D>::findKey(K key, Node<K,D>* curRoot) const{
     if (key == curRoot->getKey()){
         return curRoot;
     }
@@ -197,4 +191,31 @@ void AVLTree<K,D>::preOrderPrint(Node<K,D>* root){
     }
 }
 
+template <typename K, typename D>
+int AVLTree<K,D>::getNodeCount() const{
+    return m_nodeCount;
+}
+template <typename K, typename D>
+Node<K,D>* AVLTree<K,D>::getMaxOfTree (){
+    Node<K,D>* temp = m_root;
+    while (temp != nullptr ){
+        if (temp->getRight() == nullptr){
+            return temp;
+        }
+        temp=temp->getRight();
+    }
+    return nullptr ; //if the tree is empty
+}
+
+template <typename K, typename D>
+Node<K,D>* AVLTree<K,D>::getMinOfTree (){
+    Node<K,D>* temp = m_root;
+    while (temp != nullptr ){
+        if (temp->getLeft() == nullptr){
+            return temp;
+        }
+        temp=temp->getLeft();
+    }
+    return nullptr ; //if the tree is empty
+}
 #endif //MIVNAI_WET1_NEW_AVLTREE_H
