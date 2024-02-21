@@ -34,7 +34,7 @@ private:
         m_middleTreeStrength = new AVLTree<StrengthPairKey,StrengthInfo>();
         m_rightTreeStrength = new AVLTree<StrengthPairKey,StrengthInfo>();
     }
-
+public:
     AVLTree<StrengthPairKey,StrengthInfo>* getLeftTreeStrength();
     AVLTree<StrengthPairKey,StrengthInfo>* getRightTreeStrength();
     AVLTree<StrengthPairKey,StrengthInfo>* getMiddleTreeStrength();
