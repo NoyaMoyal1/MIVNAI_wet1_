@@ -12,9 +12,9 @@ public:
 
     void setTree(char subTree);
 
-    void setStrength(int strength);
+    void setStrengthFromInfo(int strength);
 
-    int getStrength();
+    int getStrengthFromInfo();
 };
 
 

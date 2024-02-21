@@ -9,6 +9,6 @@ void StrengthInfo::setTree(char subTree){
 void StrengthInfo::setStrength(int strength){
     m_strength=strength;
 }
-int StrengthInfo::getStrength(){
+int StrengthInfo::getStrengthFromInfo(){
     return m_strength;
 }
