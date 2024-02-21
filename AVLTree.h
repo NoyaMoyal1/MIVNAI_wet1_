@@ -6,11 +6,10 @@ template <typename K, typename D>
 class AVLTree {
 private:
     Node<K,D>* m_root;
-    int m_nodeCount=0;
+    int m_nodeCount;
 
 public:
     //constructor
-    explicit AVLTree(K rootKey): m_root(new Node<K,D>(rootKey)){}
     AVLTree(): m_root(nullptr), m_nodeCount(0){}
 
     //destructor - when removing template class , first destruct the template and then the node
@@ -22,18 +21,16 @@ public:
     Node<K,D>* leftRotation(Node<K,D>* node);
     Node<K,D>* LRRotation(Node<K,D>* node);
     Node<K,D>* RLRotation(Node<K,D>* node);
-
     Node<K,D>* getMaxOfTree ();
     Node<K,D>* getMinOfTree ();
+    int getNodeCount() const;
 
     Node<K,D>* balance(Node<K,D>* unbalancedNode);
-    Node<K,D>* findKey(K k , Node<K,D>* curRoot) const;
+    Node<K,D>* findKey(K key, Node<K,D>* curRoot) const;
     Node<K,D>* insertNodeToTree(Node<K,D>* Newnode, Node<K,D>* currRoot);
     Node<K,D>* DeleteNodeFromTree(Node<K,D>* currRoot, K key);
     Node<K,D>* getRoot();
     void setRoot(Node<K,D>* newRoot);
-    int getNodeCount() const;
-
 
     void preOrderPrint(Node<K,D>* root);
 };
@@ -46,39 +43,6 @@ void AVLTree<K,D>::setRoot(Node<K,D>* newRoot){
     m_root = newRoot;
 }
 // Assume we got a valid input that isn't already in the tree - NEED TO CHECK OUTSIDE IN THE ADD FUNCTION!!
-template <typename K, typename D>
-Node<K,D>* AVLTree<K,D>::insertNodeToTree(Node<K,D>* Newnode, Node<K,D>* currRoot){
-    if(currRoot->getKey() < Newnode->getKey()){
-        if(currRoot->getRight() == nullptr){
-            currRoot->setRight(Newnode);
-            m_nodeCount++;
-            currRoot->setHeight(currRoot->getHeight());
-            //height = max(left->getHeight(), right->getHeight())+1;
-            return currRoot;
-        }
-        else{
-            currRoot->setRight(this->insertNodeToTree(Newnode, currRoot->getRight()));
-        }
-    }
-    if(currRoot->getKey() > Newnode->getKey()){
-        if (currRoot->getLeft() == nullptr){
-            currRoot->setLeft(Newnode);
-            m_nodeCount++;
-            currRoot->setHeight(currRoot->getHeight());
-            return currRoot;
-        }
-        else{
-            currRoot->setLeft(this->insertNodeToTree(Newnode, currRoot->getLeft()));
-        }
-    }
-    currRoot->setHeight(currRoot->getHeight());
-    int balanceFactor = currRoot->getBalanceFactor();
-    if (balanceFactor == -2 || balanceFactor == 2){
-        return balance(currRoot);
-    }
-    return currRoot;
-}
-
 template <typename K, typename D>
 Node<K,D>* AVLTree<K,D>::insertNodeToTree(Node<K,D>* newNode, Node<K,D>* currRoot) {
     if(currRoot == nullptr) {
@@ -95,10 +59,11 @@ Node<K,D>* AVLTree<K,D>::insertNodeToTree(Node<K,D>* newNode, Node<K,D>* currRoo
     }
 
     // update height
-    currRoot->setHeight( max(currRoot->getLeft()->getHeight(), currRoot->getRight()->getHeight()) +1 );
+    currRoot->setHeight( currRoot->getHeight() );
 
     return balance(currRoot);
 }
+
 template <typename K, typename D>
 Node<K,D>* AVLTree<K,D>::balance(Node<K,D>* unbalancedNode){
     if(unbalancedNode->getBalanceFactor() == 2){
@@ -171,7 +136,6 @@ Node<K,D>* AVLTree<K,D>::DeleteNodeFromTree(Node<K,D>* currRoot, K key) {
             currRoot->setData(temp->getData());
             currRoot->setRight(this->DeleteNodeFromTree(currRoot->getRight(), temp->getKey()));
         }
-        m_nodeCount--;
     }
     // Update height of the current node
     currRoot->setHeight(currRoot->getHeight());
@@ -218,6 +182,20 @@ Node<K,D>* AVLTree<K,D>::RLRotation(Node<K,D>* node){
 
 
 template <typename K, typename D>
+void AVLTree<K,D>::preOrderPrint(Node<K,D>* root){
+    if(root != nullptr)
+    {
+        std::cout << root->getKey() << " ";
+        this->preOrderPrint(root->getLeft());
+        this->preOrderPrint(root->getRight());
+    }
+}
+
+template <typename K, typename D>
+int AVLTree<K,D>::getNodeCount() const{
+    return m_nodeCount;
+}
+template <typename K, typename D>
 Node<K,D>* AVLTree<K,D>::getMaxOfTree (){
     Node<K,D>* temp = m_root;
     while (temp != nullptr ){
@@ -240,22 +218,4 @@ Node<K,D>* AVLTree<K,D>::getMinOfTree (){
     }
     return nullptr ; //if the tree is empty
 }
-
-
-template <typename K, typename D>
-void AVLTree<K,D>::preOrderPrint(Node<K,D>* root){
-    if(root != nullptr)
-    {
-        std::cout << root->getKey() << " ";
-        this->preOrderPrint(root->getLeft());
-        this->preOrderPrint(root->getRight());
-    }
-}
-
-
-template <typename K, typename D>
-int AVLTree<K,D>::getNodeCount() const{
-    return m_nodeCount;
-}
-
 #endif //MIVNAI_WET1_NEW_AVLTREE_H

@@ -1,8 +1,11 @@
 
-#ifndef MIVANI1_WET1_UPDATED_GIT_CONTESTANT_H
-#define MIVANI1_WET1_UPDATED_GIT_CONTESTANT_H
+
+#ifndef TRY2_COPY_CONTESTANT_H
+#define TRY2_COPY_CONTESTANT_H
 
 #include "StrengthInfo.h"
+#include "Country.h"
+
 #define THREE 3
 
 class Contestant {
@@ -17,17 +20,9 @@ private:
 
 
 public:
-    Contestant(int contestantID, Country* countryPtr, Sport sport, int strength):
-        m_contestantID(contestantID), m_countryPtr(countryPtr), m_sport(sport), m_strength(strength)
-        ,m_strengthInfo(new StrengthInfo(m_strength)),m_numOfCurrTeams(0) {
-        for (int i = 0; i < THREE ; ++i) {
-            m_teamArray[i] = -1;
-        }
-    }
+    Contestant(int contestantID, Country* countryPtr, Sport sport, int strength);
 
-    ~Contestant() {
-        delete m_strengthInfo;
-    }
+    ~Contestant();
     Contestant(const Contestant& other) = delete;
 
     int get_contestantID();
@@ -41,30 +36,4 @@ public:
 };
 
 
-int Contestant:: get_contestantID(){
-    return m_contestantID;
-}
-Country* Contestant::get_Country(){
-    return m_countryPtr;
-}
-Sport Contestant::get_sport(){
-    return m_sport;
-}
-int* Contestant::get_teamsArr(){
-    return m_teamArray;
-}
-int Contestant::get_numTeam(){
-    return m_numOfCurrTeams;
-}
-
-int Contestant::get_strength(){
-    return m_strength;
-}
-void Contestant::set_strength(int newStrength){
-    m_strength = newStrength;
-}
-
-void Contestant::changeStrengthInfo(int newStrength){
-    m_strengthInfo->setStrength(newStrength);
-}
 #endif //MIVANI1_WET1_UPDATED_GIT_CONTESTANT_H
