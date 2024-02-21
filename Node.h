@@ -134,9 +134,12 @@ int Node<K,D>::getBalanceFactor() const{
 }
 
 
-/*
-int main(){
 
+int main(){
+    std::cout << "Adir";
+    return 0;
+}
+/*
 Node<int>* root = new Node<int>(21);
 
 Node<int>* a = new Node<int>(23);
