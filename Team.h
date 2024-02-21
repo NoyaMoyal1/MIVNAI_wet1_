@@ -39,7 +39,7 @@ public:
     AVLTree<int,Contestant>* getRightTreeID();
     AVLTree<int,Contestant>* getMiddleTreeID();
     int getNumOfContestant ();
-
+    int getTeamID();
     void calcAusterity();
     int calcAusterity1();
     Country* getCountry();

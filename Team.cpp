@@ -47,6 +47,9 @@ Country* Team::getCountry(){
 Sport Team::getSport () {
     return m_sport;
 }
+int Team::getTeamID(){
+    return this->m_teamID;
+}
 void Team::addContestantToChosenTeam(Node<int,Contestant>* nodeToAdd,Node<StrengthPairKey,StrengthInfo>* strengthNode ) {
     //assumes that the contestant and team found and that the sport identical plus country
     if (m_middleTreeID != nullptr && m_rightTreeID != nullptr && m_rightTreeID != nullptr) {
