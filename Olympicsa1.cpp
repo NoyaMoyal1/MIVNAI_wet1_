@@ -2,20 +2,20 @@
 
 
 
-Olympics::Olympics(){
-
-}
+Olympics::Olympics() : m_TeamTree(new AVLTree<int, Team>()), m_countryTree(new AVLTree<int, Country>()) ,
+m_contestantTree(new AVLTree<int, Contestant>()){}
 
 Olympics::~Olympics(){
-
-
+    delete m_TeamTree;
+    delete m_countryTree;
+    delete m_contestantTree;
 }
 //all done except from try catch
 StatusType Olympics::add_country(int countryId, int medals){
     if (countryId <= 0 || medals <= 0){
         return StatusType::INVALID_INPUT;
     }
-    if(this->m_countryTree->findKey(countryId, this->m_countryTree->getRoot()) == nullptr){
+    if(m_countryTree->findKey(countryId, m_countryTree->getRoot()) == nullptr){
         return StatusType::FAILURE;
     }
     Country* newCountry = new Country(countryId,medals);
@@ -27,7 +27,7 @@ StatusType Olympics::add_country(int countryId, int medals){
         return StatusType::ALLOCATION_ERROR;
     }
     node->setData(newCountry);
-    this->m_countryTree->insertNodeToTree(node,this->m_countryTree->getRoot());
+    m_countryTree->insertNodeToTree(node,m_countryTree->getRoot());
     return StatusType::SUCCESS;
 }
 //try catch???
@@ -35,16 +35,17 @@ StatusType Olympics::remove_country(int countryId){
     if(countryId <= 0){
         return StatusType::INVALID_INPUT;
     }
-    if(this->m_countryTree->findKey(countryId, this->m_countryTree->getRoot()) == nullptr){
+    if(m_countryTree->findKey(countryId, m_countryTree->getRoot()) == nullptr){
         return StatusType::FAILURE;
     }
-    if((this->m_countryTree->findKey(countryId,this->m_countryTree->getRoot())->getData()->get_numsContestant() != 0)
-       || (this->m_countryTree->findKey(countryId,this->m_countryTree->getRoot())->getData()->get_numsTeam() != 0)){
+    if((m_countryTree->findKey(countryId,m_countryTree->getRoot())->getData()->get_numsContestant() != 0)
+       || (m_countryTree->findKey(countryId,m_countryTree->getRoot())->getData()->get_numsTeam() != 0)){
         return StatusType::FAILURE;
     }
-    delete this->m_countryTree->findKey(countryId,this->m_countryTree->getRoot())->getData();
-    this->m_countryTree->findKey(countryId,this->m_countryTree->getRoot())->setData(nullptr);
-    this->m_countryTree->DeleteNodeFromTree(this->m_countryTree->getRoot(),countryId);
+    delete m_countryTree->findKey(countryId,m_countryTree->getRoot())->getData();
+    m_countryTree->findKey(countryId,m_countryTree->getRoot())->setData(nullptr);
+    m_countryTree->DeleteNodeFromTree(m_countryTree->getRoot(),countryId);
+
     return StatusType::SUCCESS;
 }
 
@@ -155,15 +156,43 @@ StatusType Olympics::add_contestant_to_team(int teamId,int contestantId){
         }
     }
     Node<int,Contestant>* contestantNodeToInsert =  new Node<int,Contestant>(contestantId,contestantNode->getData());
-   /* StrengthPairKey
-    Node<StrengthPairKey,StrengthInfo>* StrengthNodeToInsert =  new Node<StrengthPairKey,StrengthInfo>();
 
-    teamNode->getData()->addContestantToChosenTeam();
-*/
-    return StatusType::FAILURE;
+    StrengthPairKey key = StrengthPairKey(contestantNode->getData()->get_strength() ,contestantId);
+    Node<StrengthPairKey,StrengthInfo>* StrengthNodeToInsert =  new Node<StrengthPairKey,StrengthInfo>(key);
+    teamNode->getData()->addContestantToChosenTeam(contestantNodeToInsert,StrengthNodeToInsert );
+    contestantNodeToInsert->getData()->increaseTeamNumAndArray(teamId);
+    teamNode->getData()->increaseNumOfContestants();
+    return StatusType::SUCCESS;
 }
 
 StatusType Olympics::remove_contestant_from_team(int teamId,int contestantId){
+    if (contestantId <= 0 || teamId <= 0 ){
+        return StatusType::INVALID_INPUT;
+    }
+    Node<int,Team>* teamNode =  m_TeamTree->findKey(teamId, m_TeamTree->getRoot());
+    Node<int,Contestant>* contestantNode = m_contestantTree->findKey(contestantId, m_contestantTree->getRoot());
+    if (teamNode == nullptr || contestantNode == nullptr ){
+        return StatusType::FAILURE;
+    }
+    if (teamNode->getData()->getSport() != contestantNode->getData()->get_sport()){
+        return StatusType::FAILURE;
+    }
+    if (teamNode->getData()->getCountry()->get_countryID() != contestantNode->getData()->get_Country()->get_countryID()){
+        return StatusType::FAILURE;
+    }
+    if (contestantNode->getData()->get_numTeam() == 0 ){
+        return StatusType::FAILURE;
+    }
+    for (int i = 0; i < THREE ; ++i) {
+        if (contestantNode->getData()->get_teamsArr()[i] == teamId) {
+            int contestantStrength = contestantNode->getData()->get_strength();
+            //removes and updated the team strength and even trees
+            teamNode->getData()->removeContestantFromChosenTeam(contestantId, contestantStrength);
+            //update the fields
+            contestantNode->getData()->decreaseTeamNumAndArray(teamId);
+            teamNode->getData()->decreaseNumOfContestants();
+        }
+    }
     return StatusType::FAILURE;
 }
 
@@ -240,7 +269,7 @@ output_t<int> Olympics::get_medals(int countryId){
     if (countryId <= 0){
         return StatusType::FAILURE;
     }
-    if (this->m_countryTree->findKey(countryId,m_countryTree->getRoot()) == nullptr){
+    if (m_countryTree->findKey(countryId,m_countryTree->getRoot()) == nullptr){
         return StatusType::FAILURE;
     }
     return m_countryTree->findKey(countryId,m_countryTree->getRoot())->getData()->get_medals();
@@ -248,38 +277,73 @@ output_t<int> Olympics::get_medals(int countryId){
 }
 
 output_t<int> Olympics::get_team_strength(int teamId){
-    if (teamId <= 0){
-        return StatusType::FAILURE;
-    }
-    if (this->m_TeamTree->findKey(teamId,m_TeamTree->getRoot()) == nullptr){
+    if (teamId <= 0 || m_TeamTree->findKey(teamId,m_TeamTree->getRoot()) == nullptr){
         return StatusType::FAILURE;
     }
     return m_TeamTree->findKey(teamId,m_TeamTree->getRoot())->getData()->getTeamStrength();
 }
 
-StatusType Olympics::unite_teams(int teamId1,int teamId2){
-    return StatusType::FAILURE;
+StatusType Olympics::unite_teams(int teamId1,int teamId2) {
+    if (teamId1 <= 0 || teamId2 <= 0 || teamId1 == teamId2) {
+        return StatusType::INVALID_INPUT;
+    }
+    
+    if (m_TeamTree->findKey(teamId1, m_TeamTree->getRoot()) == nullptr ||
+        m_TeamTree->findKey(teamId2, m_TeamTree->getRoot()) == nullptr) {
+        return StatusType::FAILURE;
+    }
+    Team* team1 = m_TeamTree->findKey(teamId1, m_TeamTree->getRoot())->getData();
+    Team* team2 = m_TeamTree->findKey(teamId2, m_TeamTree->getRoot())->getData();
+    if (team1->getSport() != team2->getSport()) {
+        return StatusType::FAILURE;
+    }
+    if (team1->getCountry()->get_countryID() != team2->getCountry()->get_countryID()) {
+        return StatusType::FAILURE;
+    }
+    Contestant** contestantArray1 = new Contestant * [team1->getNumOfContestant()];
+    StrengthInfo** strengthArray1 = new StrengthInfo * [team1->getNumOfContestant()];
+    Contestant** contestantArray2 = new Contestant * [team2->getNumOfContestant()];
+    StrengthInfo** strengthArray2 = new StrengthInfo * [team2->getNumOfContestant()];
+
+    int index1 = 0;
+    team1->getLeftTreeID()->convertTreeToArray(team1->getLeftTreeID()->getRoot(),contestantArray1, &index1);
+    team1->getMiddleTreeID()->convertTreeToArray(team1->getMiddleTreeID()->getRoot(),contestantArray1, &index1);
+    team1->getRightTreeID()->convertTreeToArray(team1->getRightTreeID()->getRoot(),contestantArray1, &index1);
+
+    int index2 = 0;
+    team2->getLeftTreeID()->convertTreeToArray(team2->getLeftTreeID()->getRoot(),contestantArray2, &index2);
+    team2->getMiddleTreeID()->convertTreeToArray(team2->getMiddleTreeID()->getRoot(),contestantArray2, &index2);
+    team2->getRightTreeID()->convertTreeToArray(team2->getRightTreeID()->getRoot(),contestantArray2, &index2);
+    Contestant** contestantArrayUniteRep = new Contestant * [team1->getNumOfContestant()+team2->getNumOfContestant()];
+    merge(contestantArray1,team1->getNumOfContestant(),contestantArray2,team2->getNumOfContestant(),contestantArrayUniteRep  );
+
+////////////////////////////////////////
+    return remove_team(teamId2);
+    
 }
+
 
 StatusType Olympics::play_match(int teamId1,int teamId2){
     if (teamId1 <= 0 || teamId2 <= 0 || teamId1 == teamId2){
         return StatusType::INVALID_INPUT;
     }
-    if (m_TeamTree->findKey(teamId1, m_TeamTree->getRoot()) == nullptr || m_TeamTree->findKey(teamId2, m_TeamTree->getRoot()) == nullptr){
+    if (m_TeamTree->findKey(teamId1, m_TeamTree->getRoot()) == nullptr ||
+    m_TeamTree->findKey(teamId2, m_TeamTree->getRoot()) == nullptr){
         return StatusType::FAILURE;
     }
-    if(m_TeamTree->findKey(teamId1, m_TeamTree->getRoot())->getData()->getSport() != m_TeamTree->findKey(teamId2, m_TeamTree->getRoot())->getData()->getSport()){
+    if(m_TeamTree->findKey(teamId1, m_TeamTree->getRoot())->getData()->getSport() !=
+    m_TeamTree->findKey(teamId2, m_TeamTree->getRoot())->getData()->getSport()){
         return StatusType::FAILURE;
     }
     int medalT1 = m_TeamTree->findKey(teamId1, m_TeamTree->getRoot())->getData()->getCountry()->get_medals();
     int medalT2 = m_TeamTree->findKey(teamId2, m_TeamTree->getRoot())->getData()->getCountry()->get_medals();
     int pointTeam1 = medalT1 + get_team_strength(teamId1).ans();
     int pointTeam2 = medalT2 + get_team_strength(teamId1).ans();
-    if(medalT1 > medalT1){
-        m_TeamTree->findKey(teamId1, m_TeamTree->getRoot())->getData()->getCountry()->addOneTeam();
+    if(pointTeam1 > pointTeam2){
+        m_TeamTree->findKey(teamId1, m_TeamTree->getRoot())->getData()->getCountry()->countryWonMedal();
     }
-    if (medalT2 > medalT1){
-        m_TeamTree->findKey(teamId2, m_TeamTree->getRoot())->getData()->getCountry()->addOneTeam();
+    else if (pointTeam1 > pointTeam2){
+        m_TeamTree->findKey(teamId2, m_TeamTree->getRoot())->getData()->getCountry()->countryWonMedal();
     }
     return StatusType::SUCCESS;
 }
@@ -288,13 +352,10 @@ output_t<int> Olympics::austerity_measures(int teamId){
     if (teamId <= 0){
         return StatusType::INVALID_INPUT;
     }
-    if(m_TeamTree->findKey(teamId,m_TeamTree->getRoot()) == nullptr){
+    if(m_TeamTree->findKey(teamId,m_TeamTree->getRoot()) == nullptr ||
+    m_TeamTree->findKey(teamId,m_TeamTree->getRoot())->getData()->getNumOfContestant() < 3){
         return StatusType::FAILURE;
     }
-    if(  m_TeamTree->findKey(teamId,m_TeamTree->getRoot())->getData()->getNumOfContestant() < 3){
-        return StatusType::FAILURE;
-    }
-
     return 0;
 }
 

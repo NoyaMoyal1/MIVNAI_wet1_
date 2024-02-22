@@ -33,7 +33,18 @@ public:
     void setRoot(Node<K,D>* newRoot);
 
     void preOrderPrint(Node<K,D>* root);
-};
+    void inOrderPrint(Node<K,D>* root);
+
+    void changeTreeFromFull(int sizeOfArray);
+    Node<K,D>* FullTreeRemoveNode(int* numOfNodesToRemovePtr, Node<K,D>* currRoot);
+    Node<K,D>* buildFullTreeRoot(int sizeOfTree);
+    int calcSizeOfFullTree(int sizeOfArray);
+    void convertTreeToArray (Node<K,D>* currRoot, D** data, int* index);
+    void convertArrayToTree (Node<K,D>* currRoot, D** data, int* index);
+
+
+
+    };
 template <typename K, typename D>
 Node<K,D>* AVLTree<K,D>::getRoot(){
     return m_root;
@@ -79,7 +90,7 @@ Node<K,D>* AVLTree<K,D>::balance(Node<K,D>* unbalancedNode){
             return leftRotation(unbalancedNode);
         }
         else if (unbalancedNode->getRight()->getBalanceFactor() == 1){
-            return RLRotation(unbalancedNode);;
+            return RLRotation(unbalancedNode);
         }
     }
     return unbalancedNode;
@@ -88,7 +99,7 @@ Node<K,D>* AVLTree<K,D>::balance(Node<K,D>* unbalancedNode){
 //find key in AVL tree and return a pointer to it
 template <typename K, typename D>
 Node<K,D>* AVLTree<K,D>::findKey(K key, Node<K,D>* curRoot) const{
-    if (curRoot != nullptr && key == curRoot->getKey()){
+    if (curRoot != nullptr || key == curRoot->getKey()){
         return curRoot;
     }
     else if (key < curRoot->getKey() && curRoot->getLeft() != nullptr){
@@ -192,6 +203,17 @@ void AVLTree<K,D>::preOrderPrint(Node<K,D>* root){
 }
 
 template <typename K, typename D>
+void AVLTree<K,D>::inOrderPrint(Node<K,D>* root){
+    if(root != nullptr)
+    {
+        this->preOrderPrint(root->getLeft());
+        std::cout << root->getKey() << " ";
+        this->preOrderPrint(root->getRight());
+    }
+}
+
+
+template <typename K, typename D>
 int AVLTree<K,D>::getNodeCount() const{
     return m_nodeCount;
 }
@@ -218,4 +240,71 @@ Node<K,D>* AVLTree<K,D>::getMinOfTree (){
     }
     return nullptr ; //if the tree is empty
 }
+template <typename K, typename D>
+int AVLTree<K,D>::calcSizeOfFullTree(int sizeOfArray){
+    int hezka = 1;
+    int sum = 0;
+    while (sum+1 < sizeOfArray){
+        sum += 2 << hezka;
+        hezka++;
+    }
+    return sum+1;
+}
+
+template <typename K, typename D>
+Node<K,D>* AVLTree<K,D>::buildFullTreeRoot(int sizeOfTree){
+    if(sizeOfTree == 0){
+        return nullptr;
+    }
+    Node<K,D>* root = new Node<K,D>(-1);
+    root->setLeft(buildFullTreeRoot((sizeOfTree-1)/2));
+    root->setRight(buildFullTreeRoot((sizeOfTree-1)/2));
+    return root;
+}
+
+template <typename K, typename D>
+void AVLTree<K,D>::changeTreeFromFull(int sizeOfArray){
+    int numOfNodesToRemove = m_nodeCount - sizeOfArray;
+
+    m_root = FullTreeRemoveNode(&numOfNodesToRemove, m_root);
+}
+
+template <typename K, typename D>
+Node<K,D>* AVLTree<K,D>::FullTreeRemoveNode(int* numOfNodesToRemovePtr, Node<K,D>* currRoot){
+    if(*numOfNodesToRemovePtr == 0 || currRoot == nullptr){
+        return currRoot;
+    }
+    currRoot->SetRight(FullTreeRemoveNode(numOfNodesToRemovePtr, currRoot->getRight()));
+    if(currRoot->getRight() == nullptr && currRoot->getLeft() == nullptr){
+        *numOfNodesToRemovePtr--;
+        return DeleteNodeFromTree(currRoot, currRoot->getKey());
+    }
+    currRoot->setLeft(FullTreeRemoveNode(numOfNodesToRemovePtr, currRoot->getLeft()));
+    return currRoot;
+}
+
+
+template<typename K, typename D>
+void AVLTree<K,D>::convertTreeToArray (Node<K,D>* currRoot, D** data, int* index){
+    if(currRoot == nullptr){
+        return;
+    }
+    convertTreeToArray(currRoot->getLeft(), data, index);
+    *(data + (*index))= currRoot->getData();
+    (*index)++;
+    convertTreeToArray(currRoot->getRight(), data, index);
+}
+
+
+template<typename K, typename D>
+void AVLTree<K,D>::convertArrayToTree (Node<K,D>* currRoot, D** data, int* index){
+    if(currRoot == nullptr){
+        return;
+    }
+    convertArrayToTree(currRoot->getLeft(), data, index);
+    currRoot->setData(*data +(*index));
+    (*index)++;
+    convertArrayToTree(currRoot->getRight(), data, index);
+}
+
 #endif //MIVNAI_WET1_NEW_AVLTREE_H

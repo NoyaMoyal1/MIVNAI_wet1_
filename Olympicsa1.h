@@ -20,6 +20,7 @@
 #include "Country.h"
 #include "Team.h"
 #include "AVLTree.h"
+#include "Extra.h"
 class Olympics {
 private:
     AVLTree<int,Contestant>* m_contestantTree;

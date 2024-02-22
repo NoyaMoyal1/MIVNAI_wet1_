@@ -32,6 +32,9 @@ public:
     int get_strength();
     StrengthInfo* getStrengthInfo();
     void set_strength(int power);
+    void increaseTeamNumAndArray(int teamID);
+    void decreaseTeamNumAndArray(int teamID);
+
 };
 
 

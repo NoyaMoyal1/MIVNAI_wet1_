@@ -35,3 +35,25 @@ void Contestant::set_strength(int newStrength){
 StrengthInfo* Contestant::getStrengthInfo(){
     return m_strengthInfo;
 }
+
+void Contestant::increaseTeamNumAndArray(int teamID){
+    m_teamArray[m_numOfCurrTeams]=teamID;
+    m_numOfCurrTeams++;
+}
+
+void Contestant::decreaseTeamNumAndArray(int teamID){
+    for (int i = 0; i < THREE ; ++i) {
+        if (m_teamArray[i] == teamID ) {
+            m_teamArray[i] = -1;
+            for (int j = THREE-1 ; j > 0 ; ++j) {
+                if (m_teamArray[j] != -1) {
+                    m_teamArray[i] = m_teamArray[j];
+                    m_teamArray[j] = -1;
+                    break;
+                }
+            }
+            break;
+        }
+    }
+    m_numOfCurrTeams--;
+}
