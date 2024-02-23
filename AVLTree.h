@@ -37,11 +37,11 @@ public:
 
     void changeTreeFromFull(int sizeOfArray);
     Node<K,D>* FullTreeRemoveNode(int* numOfNodesToRemovePtr, Node<K,D>* currRoot);
-    Node<K,D>* buildFullTreeRoot(int sizeOfTree);
+    Node<K,D>* buildFullTreeRoot(int sizeOfTree, K nullKey);
     int calcSizeOfFullTree(int sizeOfArray);
     void convertTreeToArray (Node<K,D>* currRoot, D** data, int* index);
     void convertArrayToTree (Node<K,D>* currRoot, D** data, int* index);
-    void buildTreeBeforeInsertArray(int sizeOfArray);
+    void buildTreeBeforeInsertArray(int sizeOfArray, K nullKey);
 
 
 
@@ -254,13 +254,13 @@ int AVLTree<K,D>::calcSizeOfFullTree(int sizeOfArray){
 }
 
 template <typename K, typename D>
-Node<K,D>* AVLTree<K,D>::buildFullTreeRoot(int sizeOfTree){
+Node<K,D>* AVLTree<K,D>::buildFullTreeRoot(int sizeOfTree, K nullKey){
     if(sizeOfTree == 0){
         return nullptr;
     }
-    Node<K,D>* root = new Node<K,D>(-1);
-    root->setLeft(buildFullTreeRoot((sizeOfTree-1)/2));
-    root->setRight(buildFullTreeRoot((sizeOfTree-1)/2));
+    Node<K,D>* root = new Node<K,D>(nullKey);
+    root->setLeft(buildFullTreeRoot((sizeOfTree-1)/2, nullKey));
+    root->setRight(buildFullTreeRoot((sizeOfTree-1)/2, nullKey));
     return root;
 }
 
@@ -298,9 +298,9 @@ void AVLTree<K,D>::convertTreeToArray (Node<K,D>* currRoot, D** data, int* index
 }
 
 template<typename K, typename D>
-void AVLTree<K,D>::buildTreeBeforeInsertArray(int sizeOfArray){
+void AVLTree<K,D>::buildTreeBeforeInsertArray(int sizeOfArray, K nullKey){
     int sizeOfTree = calcSizeOfFullTree(sizeOfArray);
-    m_root = buildFullTreeRoot(sizeOfTree);
+    m_root = buildFullTreeRoot(sizeOfTree, nullKey);
     m_nodeCount = sizeOfTree;
     changeTreeFromFull(sizeOfArray);
 }

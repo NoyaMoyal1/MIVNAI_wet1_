@@ -6,11 +6,17 @@
 class StrengthInfo {
 private:
     int m_strength;
+    int m_strengthContestantID;
     char m_subTree;
 public:
-    StrengthInfo(int strength);
+    StrengthInfo(int strength, int id);
 
     void setTree(char subTree);
+
+    char getTree();
+
+
+    int getIdFromInfo();
 
     void setStrengthFromInfo(int strength);
 

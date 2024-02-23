@@ -25,5 +25,8 @@ public:
 };
 
 
+void mergeStrength(StrengthInfo** a, int na , StrengthInfo** b, int nb , StrengthInfo** c);
+
+
 
 #endif //MIVANI1_WET1_UPDATED_GIT_COUNTRY_H
