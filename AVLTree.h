@@ -41,6 +41,7 @@ public:
     int calcSizeOfFullTree(int sizeOfArray);
     void convertTreeToArray (Node<K,D>* currRoot, D** data, int* index);
     void convertArrayToTree (Node<K,D>* currRoot, D** data, int* index);
+    void buildTreeBeforeInsertArray(int sizeOfArray);
 
 
 
@@ -242,6 +243,7 @@ Node<K,D>* AVLTree<K,D>::getMinOfTree (){
 }
 template <typename K, typename D>
 int AVLTree<K,D>::calcSizeOfFullTree(int sizeOfArray){
+    if (sizeOfArray == 0 ) return 0;
     int hezka = 1;
     int sum = 0;
     while (sum+1 < sizeOfArray){
@@ -265,7 +267,6 @@ Node<K,D>* AVLTree<K,D>::buildFullTreeRoot(int sizeOfTree){
 template <typename K, typename D>
 void AVLTree<K,D>::changeTreeFromFull(int sizeOfArray){
     int numOfNodesToRemove = m_nodeCount - sizeOfArray;
-
     m_root = FullTreeRemoveNode(&numOfNodesToRemove, m_root);
 }
 
@@ -274,9 +275,10 @@ Node<K,D>* AVLTree<K,D>::FullTreeRemoveNode(int* numOfNodesToRemovePtr, Node<K,D
     if(*numOfNodesToRemovePtr == 0 || currRoot == nullptr){
         return currRoot;
     }
-    currRoot->SetRight(FullTreeRemoveNode(numOfNodesToRemovePtr, currRoot->getRight()));
+    currRoot->setRight(FullTreeRemoveNode(numOfNodesToRemovePtr, currRoot->getRight()));
     if(currRoot->getRight() == nullptr && currRoot->getLeft() == nullptr){
         *numOfNodesToRemovePtr--;
+        m_nodeCount--;
         return DeleteNodeFromTree(currRoot, currRoot->getKey());
     }
     currRoot->setLeft(FullTreeRemoveNode(numOfNodesToRemovePtr, currRoot->getLeft()));
@@ -294,6 +296,15 @@ void AVLTree<K,D>::convertTreeToArray (Node<K,D>* currRoot, D** data, int* index
     (*index)++;
     convertTreeToArray(currRoot->getRight(), data, index);
 }
+
+template<typename K, typename D>
+void AVLTree<K,D>::buildTreeBeforeInsertArray(int sizeOfArray){
+    int sizeOfTree = calcSizeOfFullTree(sizeOfArray);
+    m_root = buildFullTreeRoot(sizeOfTree);
+    m_nodeCount = sizeOfTree;
+    changeTreeFromFull(sizeOfArray);
+}
+
 
 
 template<typename K, typename D>

@@ -57,3 +57,23 @@ void Contestant::decreaseTeamNumAndArray(int teamID){
     }
     m_numOfCurrTeams--;
 }
+
+void mergeContestant(Contestant** a, int na , Contestant** b, int nb , Contestant** c){
+    int ia=0, ib=0, ic=0;
+
+    while(ia < na && ib < nb){
+        if((*(a+ia))->get_contestantID() < (*(b+ib))->get_contestantID() ){
+            *(c+ic)=*(a+ia);
+            ia++;
+        }
+        else{
+            *(c+ic)=*(b+ib);
+            ib++;
+        }
+        ic++;
+    }
+    for(;ia < na; ia++, ic++)
+        *(c+ic)=*(a+ia);
+    for(;ib < nb; ib++, ic++)
+        *(c+ic)=*(b+ib);
+}

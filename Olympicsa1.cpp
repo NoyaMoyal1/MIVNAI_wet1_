@@ -300,10 +300,10 @@ StatusType Olympics::unite_teams(int teamId1,int teamId2) {
     if (team1->getCountry()->get_countryID() != team2->getCountry()->get_countryID()) {
         return StatusType::FAILURE;
     }
+    //creating array and fills them with pointers according to the placement in the avl tree
     Contestant** contestantArray1 = new Contestant * [team1->getNumOfContestant()];
-    StrengthInfo** strengthArray1 = new StrengthInfo * [team1->getNumOfContestant()];
     Contestant** contestantArray2 = new Contestant * [team2->getNumOfContestant()];
-    StrengthInfo** strengthArray2 = new StrengthInfo * [team2->getNumOfContestant()];
+
 
     int index1 = 0;
     team1->getLeftTreeID()->convertTreeToArray(team1->getLeftTreeID()->getRoot(),contestantArray1, &index1);
@@ -314,12 +314,139 @@ StatusType Olympics::unite_teams(int teamId1,int teamId2) {
     team2->getLeftTreeID()->convertTreeToArray(team2->getLeftTreeID()->getRoot(),contestantArray2, &index2);
     team2->getMiddleTreeID()->convertTreeToArray(team2->getMiddleTreeID()->getRoot(),contestantArray2, &index2);
     team2->getRightTreeID()->convertTreeToArray(team2->getRightTreeID()->getRoot(),contestantArray2, &index2);
+
+    StrengthInfo** strengthArray1 = new StrengthInfo * [team1->getNumOfContestant()];
+    StrengthInfo** strengthArray2 = new StrengthInfo * [team2->getNumOfContestant()];
+
+
+    StrengthInfo** strengthArrayLeft1 = new StrengthInfo * [team1->getLeftTreeStrength()->getNodeCount()];
+    StrengthInfo** strengthArrayLeft2 = new StrengthInfo * [team2->getLeftTreeStrength()->getNodeCount()];
+    StrengthInfo** strengthArrayMiddle1 = new StrengthInfo * [team1->getMiddleTreeStrength()->getNodeCount()];
+    StrengthInfo** strengthArrayMiddle2 = new StrengthInfo * [team2->getMiddleTreeStrength()->getNodeCount()];
+    StrengthInfo** strengthArrayRight1 = new StrengthInfo * [team1->getRightTreeStrength()->getNodeCount()];
+    StrengthInfo** strengthArrayRight2 = new StrengthInfo * [team2->getRightTreeStrength()->getNodeCount()];
+
+    StrengthInfo** strengthArrayLeftMiddle1 = new StrengthInfo *
+
+
+    StrengthInfo** strengthArrayLeftMiddle1 = new StrengthInfo * [team1->getLeftTreeStrength()->getNodeCount()+team1->getMiddleTreeStrength()->getNodeCount()];
+            [team1->getLeftTreeStrength()->getNodeCount()+team1->getMiddleTreeStrength()->getNodeCount()];
+
+    merge(strengthArrayLeft1,team1->getLeftTreeStrength()->getNodeCount(), strengthArrayMiddle1,team1->getMiddleTreeStrength(),strengthArrayLeftMiddle1);
+
+
+
+
+
+
+
+
+
     Contestant** contestantArrayUniteRep = new Contestant * [team1->getNumOfContestant()+team2->getNumOfContestant()];
     merge(contestantArray1,team1->getNumOfContestant(),contestantArray2,team2->getNumOfContestant(),contestantArrayUniteRep  );
 
+    StrengthInfo** strengthArrayUniteRep = new StrengthInfo * [team1->getNumOfContestant()+team2->getNumOfContestant()];
+    merge(strengthArray1,team1->getNumOfContestant(),strengthArray2,team2->getNumOfContestant(),strengthArrayUniteRep  );
+
+    delete[] contestantArray1;
+    delete[] contestantArray2;
+
+    delete[] strengthArray1;
+    delete[] strengthArray2;
+
+    int countRep= 0;
+    for (int i = 0; i <team1->getNumOfContestant()+team2->getNumOfContestant()-1  ; ++i) {
+        if (contestantArrayUniteRep[i]->get_contestantID() == contestantArrayUniteRep[i + 1]->get_contestantID()) {
+            contestantArrayUniteRep[i] = nullptr;
+            i++;
+            countRep++;
+        }
+    }
+    int newNumOfContestants = team1->getNumOfContestant()+team2->getNumOfContestant() - countRep;
+    Contestant** contestantArrayUniteNoRep = new Contestant * [newNumOfContestants];
+    for (int j=0, i = 0 ; i <team1->getNumOfContestant()+team2->getNumOfContestant() ; ++i) {
+        if (contestantArrayUniteRep[i]!= nullptr) {
+            contestantArrayUniteNoRep[j] = contestantArrayUniteRep[i];
+            j++;
+        }
+    }
 ////////////////////////////////////////
-    return remove_team(teamId2);
-    
+    for (int i = 0; i <team1->getNumOfContestant()+team2->getNumOfContestant()-1  ; ++i) {
+        if (contestantArrayUniteRep[i]->get_contestantID() == contestantArrayUniteRep[i + 1]->get_contestantID()) {
+            contestantArrayUniteRep[i] = nullptr;
+            i++;
+            countRep++;
+        }
+    }
+    int newNumOfContestants = team1->getNumOfContestant()+team2->getNumOfContestant() - countRep;
+    Contestant** contestantArrayUniteNoRep = new Contestant * [newNumOfContestants];
+    for (int j=0, i = 0 ; i <team1->getNumOfContestant()+team2->getNumOfContestant() ; ++i) {
+        if (contestantArrayUniteRep[i]!= nullptr) {
+            contestantArrayUniteNoRep[j] = contestantArrayUniteRep[i];
+            j++;
+        }
+    }
+    /////////////////////////////////////////////////
+
+
+
+    delete[] contestantArrayUniteRep;
+    team1->setNumOfContestant(newNumOfContestants);
+
+    delete team1->getLeftTreeID();
+    team1->setLeftTreeID(nullptr);
+
+    delete team1->getMiddleTreeID();
+    team1->setMiddleTreeID(nullptr);
+
+    delete team1->getRightTreeID();
+    team1->setRightTreeID(nullptr);
+
+    int newNumOfContestantsLeft =0,  newNumOfContestantsMiddle = 0, newNumOfContestantsRight = 0 ;;
+
+    if (newNumOfContestants%THREE == 0 ) {
+        newNumOfContestantsLeft = newNumOfContestants/THREE;
+        newNumOfContestantsMiddle=newNumOfContestants/THREE;
+        newNumOfContestantsRight=newNumOfContestants/THREE;
+    }
+    else if (newNumOfContestants%THREE == 1 ) {
+        newNumOfContestantsLeft = newNumOfContestants/THREE+1;
+        newNumOfContestantsMiddle=newNumOfContestants/THREE;
+        newNumOfContestantsRight=newNumOfContestants/THREE;
+    }
+    else if (newNumOfContestants%THREE == 2 ) {
+        newNumOfContestantsLeft = newNumOfContestants/THREE+1;
+        newNumOfContestantsMiddle=newNumOfContestants/THREE+1;
+        newNumOfContestantsRight=newNumOfContestants/THREE;
+    }
+    AVLTree<int, Contestant>* newLeftTreeID = new AVLTree<int, Contestant>();
+    newLeftTreeID->buildTreeBeforeInsertArray(newNumOfContestantsLeft);
+    team1->setLeftTreeID(newLeftTreeID);
+
+    AVLTree<int, Contestant>* newMiddleTreeID = new AVLTree<int, Contestant>();
+    newMiddleTreeID->buildTreeBeforeInsertArray(newNumOfContestantsMiddle);
+    team1->setMiddleTreeID(newMiddleTreeID);
+
+    AVLTree<int, Contestant>* newRightTreeID = new AVLTree<int, Contestant>();
+    newRightTreeID->buildTreeBeforeInsertArray(newNumOfContestantsRight);
+    team1->setRightTreeID(newRightTreeID);
+
+    int indexID=0;
+    team1->getLeftTreeID()->convertArrayToTree(team1->getLeftTreeID()->getRoot(),contestantArrayUniteNoRep, &indexID);
+    team1->getMiddleTreeID()->convertArrayToTree(team1->getMiddleTreeID()->getRoot(),contestantArrayUniteNoRep, &indexID);
+    team1->getRightTreeID()->convertArrayToTree(team1->getRightTreeID()->getRoot(),contestantArrayUniteNoRep, &indexID);
+
+    delete[] contestantArrayUniteNoRep;
+
+
+
+
+
+
+////////////////////////////////////////
+            return remove_team(teamId2);
+    }
+
 }
 
 

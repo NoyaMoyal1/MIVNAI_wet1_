@@ -37,5 +37,7 @@ public:
 
 };
 
+void mergeContestant(Contestant** a, int na , Contestant** b, int nb , Contestant** c);
+
 
 #endif //MIVANI1_WET1_UPDATED_GIT_CONTESTANT_H

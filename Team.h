@@ -47,6 +47,15 @@ public:
     AVLTree<int,Contestant>* getLeftTreeID();
     AVLTree<int,Contestant>* getRightTreeID();
     AVLTree<int,Contestant>* getMiddleTreeID();
+
+    void setLeftTreeStrength(AVLTree<StrengthPairKey,StrengthInfo>* newTree);
+    void setRightTreeStrength(AVLTree<StrengthPairKey,StrengthInfo>* newTree);
+    void setMiddleTreeStrength(AVLTree<StrengthPairKey,StrengthInfo>* newTree);
+    void setLeftTreeID(AVLTree<int,Contestant>* newTree);
+    void setRightTreeID(AVLTree<int,Contestant>* newTree);
+    void setMiddleTreeID(AVLTree<int,Contestant>* newTree);
+
+    void setNumOfContestant (int num);
     int getNumOfContestant ();
     int getTeamID();
     void calcAusterity();
