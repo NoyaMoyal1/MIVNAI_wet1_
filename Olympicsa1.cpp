@@ -536,7 +536,7 @@ StatusType Olympics::unite_teams(int teamId1,int teamId2) {
     team1->getRightTreeID()->convertArrayToTree(team1->getRightTreeID()->getRoot(),contestantArrayUniteNoRep, &indexID);
 
     delete[] contestantArrayUniteNoRep;
-
+    team1->setTeamStrength(team1->calcStrength());
     return remove_team(teamId2);
 }
 
