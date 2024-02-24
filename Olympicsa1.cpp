@@ -250,6 +250,7 @@ StatusType Olympics::update_contestant_strength(int contestantId ,int change){
         }
         //update team strength
         teamNode->getData()->setTeamStrength(teamNode->getData()->calcStrength());
+        teamNode->getData()->calcAusterity();
     }
 
     return StatusType::SUCCESS;
@@ -537,7 +538,9 @@ StatusType Olympics::unite_teams(int teamId1,int teamId2) {
 
     delete[] contestantArrayUniteNoRep;
     team1->setTeamStrength(team1->calcStrength());
+    team1->calcAusterity();
     return remove_team(teamId2);
+
 }
 
 
@@ -574,6 +577,7 @@ output_t<int> Olympics::austerity_measures(int teamId){
     m_TeamTree->findKey(teamId,m_TeamTree->getRoot())->getData()->getNumOfContestant() < 3){
         return StatusType::FAILURE;
     }
-    return 0;
+
+    return (m_TeamTree->findKey(teamId,m_TeamTree->getRoot())->getData()->getAusterity());
 }
 

@@ -2,7 +2,7 @@
 
 Contestant::Contestant(int contestantID, Country* countryPtr, Sport sport, int strength):
         m_contestantID(contestantID), m_countryPtr(countryPtr), m_sport(sport)
-        ,m_strengthInfo(new StrengthInfo(strength)),m_numOfCurrTeams(0) {
+        ,m_strengthInfo(new StrengthInfo(strength, contestantID)),m_numOfCurrTeams(0) {
     for (int i = 0; i < THREE ; ++i) {
         m_teamArray[i] = -1;
     }

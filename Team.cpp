@@ -29,6 +29,10 @@ AVLTree<int,Contestant>* Team::getRightTreeID(){
 AVLTree<int,Contestant>* Team::getMiddleTreeID(){
     return m_middleTreeID;
 }
+int Team::getAusterity(){
+    return m_austerityStrength;
+}
+
 void Team::setLeftTreeStrength(AVLTree<StrengthPairKey,StrengthInfo>* newTree){
     m_leftTreeStrength = newTree;
 }
@@ -110,6 +114,7 @@ void Team::addContestantToChosenTeam(Node<int,Contestant>* nodeToAdd,Node<Streng
     }
     evenTeamsTrees();
     setTeamStrength(calcStrength());
+    calcAusterity();
 }
 
 void Team::removeContestantFromChosenTeam(int contestantID, int contestantStrength) {
@@ -136,9 +141,8 @@ void Team::removeContestantFromChosenTeam(int contestantID, int contestantStreng
     }
     evenTeamsTrees();
     setTeamStrength(calcStrength());
+    calcAusterity();
 }
-
-
 
 
 void Team::evenTeamsTrees () {
@@ -521,4 +525,55 @@ int Team::calcAusTwoAndOneWithProblem(AVLTree<int, Contestant>* IDTreeRemoveTwo,
     else{
         return AusStrengthMax;
     }
+}
+
+void Team::calcAusterity(){
+    if(m_numOfContestant % 3 != 0 || m_numOfContestant == 0 || m_numOfContestant == 3){
+        m_austerityStrength = 0;
+        return;
+    }
+    if (m_numOfContestant == 6){
+        m_austerityStrength = m_teamStrength;
+        return;
+    }
+    int austerityMax = m_teamStrength;
+    int curAusterity = 0;
+    curAusterity = calcAusThreeFromOneTree(m_leftTreeID, m_leftTreeStrength);
+    if (curAusterity > austerityMax){
+        austerityMax = curAusterity;
+    }
+    curAusterity = calcAusThreeFromOneTree(m_middleTreeID, m_middleTreeStrength);
+    if (curAusterity > austerityMax){
+        austerityMax = curAusterity;
+    }
+    curAusterity = calcAusThreeFromOneTree(m_rightTreeID, m_rightTreeStrength);
+    if (curAusterity > austerityMax){
+        austerityMax = curAusterity;
+    }
+    curAusterity = calcAusTwoAndOneNoProblem(m_middleTreeID, m_middleTreeStrength, m_leftTreeID, m_leftTreeStrength);
+    if (curAusterity > austerityMax){
+        austerityMax = curAusterity;
+    }
+    curAusterity = calcAusTwoAndOneNoProblem(m_middleTreeID, m_middleTreeStrength, m_rightTreeID, m_rightTreeStrength);
+    if (curAusterity > austerityMax){
+        austerityMax = curAusterity;
+    }
+    curAusterity = calcAusTwoAndOneNoProblem(m_rightTreeID, m_rightTreeStrength, m_leftTreeID, m_leftTreeStrength);
+    if (curAusterity > austerityMax){
+        austerityMax = curAusterity;
+    }
+    curAusterity = calcAusTwoAndOneNoProblem(m_leftTreeID, m_leftTreeStrength, m_rightTreeID, m_rightTreeStrength);
+    if (curAusterity > austerityMax){
+        austerityMax = curAusterity;
+    }
+    curAusterity = calcAusTwoAndOneWithProblem(m_leftTreeID, m_leftTreeStrength, m_middleTreeID, m_middleTreeStrength);
+    if (curAusterity > austerityMax){
+        austerityMax = curAusterity;
+    }
+    curAusterity = calcAusTwoAndOneWithProblem(m_rightTreeID, m_rightTreeStrength, m_middleTreeID, m_middleTreeStrength);
+    if (curAusterity > austerityMax){
+        austerityMax = curAusterity;
+    }
+    m_austerityStrength = austerityMax;
+    return;
 }

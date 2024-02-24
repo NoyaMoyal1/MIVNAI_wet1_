@@ -59,7 +59,8 @@ public:
     int getNumOfContestant ();
     int getTeamID();
     void calcAusterity();
-    int calcAusterity1();
+    int getAusterity();
+
     Country* getCountry();
 
     int getTeamStrength ();
