@@ -80,7 +80,7 @@ int Team::getTeamID(){
 }
 void Team::addContestantToChosenTeam(Node<int,Contestant>* nodeToAdd,Node<StrengthPairKey,StrengthInfo>* strengthNode ) {
     //assumes that the contestant and team found and that the sport identical plus country
-    if (m_middleTreeID->getRoot() == nullptr || m_rightTreeID->getRoot() == nullptr || m_leftTreeID->getRoot() == nullptr) {
+    if (m_middleTreeID->getRoot() == nullptr && m_rightTreeID->getRoot() == nullptr && m_leftTreeID->getRoot() == nullptr) {
         m_leftTreeID->setRoot(m_leftTreeID->insertNodeToTree( nodeToAdd, m_leftTreeID->getRoot()));
         m_leftTreeStrength->setRoot(m_leftTreeStrength->insertNodeToTree(strengthNode, m_leftTreeStrength->getRoot()));
     }
@@ -103,7 +103,7 @@ void Team::addContestantToChosenTeam(Node<int,Contestant>* nodeToAdd,Node<Streng
         }
     }
     //belong to middle tree
-    else if (m_middleTreeID->getRoot() != nullptr) {
+    else {
             // Node belongs to the middle tree
             m_middleTreeID->setRoot(m_middleTreeID->insertNodeToTree(nodeToAdd, m_middleTreeID->getRoot()));
             m_middleTreeStrength->setRoot(m_middleTreeStrength->insertNodeToTree(strengthNode, m_middleTreeStrength->getRoot()));
