@@ -100,7 +100,7 @@ Node<K,D>* AVLTree<K,D>::balance(Node<K,D>* unbalancedNode){
 //find key in AVL tree and return a pointer to it
 template <typename K, typename D>
 Node<K,D>* AVLTree<K,D>::findKey(K key, Node<K,D>* curRoot) const{
-    if (curRoot != nullptr || key == curRoot->getKey()){
+    if (curRoot != nullptr && key == curRoot->getKey()){
         return curRoot;
     }
     else if (key < curRoot->getKey() && curRoot->getLeft() != nullptr){
@@ -125,17 +125,20 @@ Node<K,D>* AVLTree<K,D>::DeleteNodeFromTree(Node<K,D>* currRoot, K key) {
     }
     if (key == currRoot->getKey()){ //find the node to delete
         if (currRoot->getLeft() == nullptr && currRoot->getRight() == nullptr) {//is leaf
+            m_nodeCount--;
             delete currRoot;
             return nullptr;
 
         }
         else if (currRoot->getLeft() == nullptr) {// have one child
             Node<K,D>* temp = new Node<K,D>(currRoot->getRight());
+            m_nodeCount--;
             delete currRoot;
             return temp;
         }
         else if (currRoot->getRight() == nullptr) {// have one child
             Node<K,D>* temp = new Node<K,D>(currRoot->getLeft());
+            m_nodeCount--;
             delete currRoot;
             return temp;
         }

@@ -25,7 +25,6 @@ public:
 };
 
 
-void mergeStrength(StrengthInfo** a, int na , StrengthInfo** b, int nb , StrengthInfo** c);
 
 
 
