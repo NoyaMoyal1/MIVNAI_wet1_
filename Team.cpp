@@ -85,22 +85,18 @@ void Team::addContestantToChosenTeam(Node<int,Contestant>* nodeToAdd,Node<Streng
         m_leftTreeStrength->setRoot(m_leftTreeStrength->insertNodeToTree(strengthNode, m_leftTreeStrength->getRoot()));
     }
     //belong to the right tree
-    else if (m_rightTreeID->getRoot() != nullptr) {
-        int rightMin = m_rightTreeID->getMinOfTree()->getKey();
-        if (nodeToAdd->getKey() > rightMin) {
-            m_rightTreeID->setRoot( m_rightTreeID->insertNodeToTree(nodeToAdd, m_rightTreeID->getRoot()));
-            m_rightTreeStrength->setRoot(m_rightTreeStrength->insertNodeToTree(strengthNode, m_rightTreeStrength->getRoot()));
-            strengthNode->getData()->setTree('R');
-        }
+
+    else if (m_rightTreeID->getRoot() != nullptr && nodeToAdd->getKey() > m_rightTreeID->getMinOfTree()->getKey()){
+        m_rightTreeID->setRoot( m_rightTreeID->insertNodeToTree(nodeToAdd, m_rightTreeID->getRoot()));
+        m_rightTreeStrength->setRoot(m_rightTreeStrength->insertNodeToTree(strengthNode, m_rightTreeStrength->getRoot()));
+        strengthNode->getData()->setTree('R');
     }
+
     //belong to the left tree
-    else if (m_leftTreeID->getRoot() != nullptr) {
-        int leftMax = m_leftTreeID->getMaxOfTree()->getKey();
-        if (nodeToAdd->getKey() < leftMax) {
-            m_leftTreeID->setRoot(m_leftTreeID->insertNodeToTree(nodeToAdd, m_leftTreeID->getRoot()));
-            m_leftTreeStrength->setRoot(m_leftTreeStrength->insertNodeToTree(strengthNode, m_leftTreeStrength->getRoot()));
-            strengthNode->getData()->setTree('L');
-        }
+    else if (m_leftTreeID->getRoot() != nullptr && nodeToAdd->getKey() <  m_leftTreeID->getMaxOfTree()->getKey()) {
+        m_leftTreeID->setRoot(m_leftTreeID->insertNodeToTree(nodeToAdd, m_leftTreeID->getRoot()));
+        m_leftTreeStrength->setRoot(m_leftTreeStrength->insertNodeToTree(strengthNode, m_leftTreeStrength->getRoot()));
+        strengthNode->getData()->setTree('L');
     }
     //belong to middle tree
     else {

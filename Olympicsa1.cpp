@@ -12,7 +12,7 @@ Olympics::~Olympics(){
 }
 //all done except from try catch
 StatusType Olympics::add_country(int countryId, int medals){
-    if (countryId <= 0 || medals <= 0){
+    if (countryId <= 0 || medals < 0){
         return StatusType::INVALID_INPUT;
     }
     if(m_countryTree->getRoot() != nullptr && m_countryTree->findKey(countryId, m_countryTree->getRoot()) != nullptr){
@@ -24,10 +24,10 @@ StatusType Olympics::add_country(int countryId, int medals){
     }
     Node<int,Country>* node = new Node<int,Country>(countryId);
     if (node == nullptr){
+        delete newCountry;
         return StatusType::ALLOCATION_ERROR;
     }
     node->setData(newCountry);
-
     m_countryTree->setRoot(m_countryTree->insertNodeToTree(node,m_countryTree->getRoot()));
     return StatusType::SUCCESS;
 }
@@ -67,6 +67,7 @@ StatusType Olympics::add_team(int teamId,int countryId,Sport sport){
     }
     Node<int,Team>* node = new Node<int,Team>(teamId);
     if (node == nullptr){
+        delete newTeam;
         return StatusType::ALLOCATION_ERROR;
     }
     m_countryTree->findKey(countryId,m_countryTree->getRoot())->getData()->addOneTeam();
@@ -111,6 +112,7 @@ StatusType Olympics::add_contestant(int contestantId ,int countryId,Sport sport,
     }
     Node<int,Contestant>* node = new Node<int,Contestant>(contestantId);
     if (node == nullptr){
+        delete currCountry;
         return StatusType::ALLOCATION_ERROR;
     }
     node->setData(newContestant);
@@ -163,9 +165,15 @@ StatusType Olympics::add_contestant_to_team(int teamId,int contestantId){
         }
     }
     Node<int,Contestant>* contestantNodeToInsert =  new Node<int,Contestant>(contestantId,contestantNode->getData());
-
+    if (contestantNodeToInsert == nullptr){
+        return StatusType::INVALID_INPUT;
+    }
     StrengthPairKey key = StrengthPairKey(contestantNode->getData()->get_strength() ,contestantId);
     Node<StrengthPairKey,StrengthInfo>* StrengthNodeToInsert =  new Node<StrengthPairKey,StrengthInfo>(key,contestantNodeToInsert->getData()->getStrengthInfo());
+    if (StrengthNodeToInsert == nullptr){
+        delete contestantNodeToInsert;
+        return StatusType::INVALID_INPUT;
+    }
 
     contestantNodeToInsert->getData()->increaseTeamNumAndArray(teamId);
     teamNode->getData()->increaseNumOfContestants();
@@ -236,12 +244,9 @@ StatusType Olympics::update_contestant_strength(int contestantId ,int change){
         Node<StrengthPairKey, StrengthInfo> *currRootRight = teamNode->getData()->getRightTreeStrength()->getRoot();
         Node<StrengthPairKey, StrengthInfo> *currRootMiddle = teamNode->getData()->getMiddleTreeStrength()->getRoot();
 
-        Node<StrengthPairKey, StrengthInfo> *oldStrengthNodeLeft = teamNode->getData()->getLeftTreeStrength()
-                ->findKey(oldKey,teamNode->getData()->getLeftTreeStrength()->getRoot());
-        Node<StrengthPairKey, StrengthInfo> *oldStrengthNodeRight = teamNode->getData()->getRightTreeStrength()->findKey(
-                oldKey,teamNode->getData()->getRightTreeStrength()->getRoot());
-        Node<StrengthPairKey, StrengthInfo> *oldStrengthNodeMiddle = teamNode->getData()->getMiddleTreeStrength()->findKey(
-                oldKey,teamNode->getData()->getMiddleTreeStrength()->getRoot());
+        Node<StrengthPairKey, StrengthInfo> *oldStrengthNodeLeft = teamNode->getData()->getLeftTreeStrength()->findKey(oldKey,currRootLeft);
+        Node<StrengthPairKey, StrengthInfo> *oldStrengthNodeRight = teamNode->getData()->getRightTreeStrength()->findKey(oldKey,currRootRight);
+        Node<StrengthPairKey, StrengthInfo> *oldStrengthNodeMiddle = teamNode->getData()->getMiddleTreeStrength()->findKey(oldKey,currRootMiddle);
 
         Node<StrengthPairKey, StrengthInfo> *newStrengthNode = new Node<StrengthPairKey, StrengthInfo>(newKey,
                                                                                                        currContestant->getData()->getStrengthInfo());
@@ -273,7 +278,7 @@ StatusType Olympics::update_contestant_strength(int contestantId ,int change){
 
 output_t<int> Olympics::get_strength(int contestantId){
     if (contestantId <= 0){
-        return StatusType::FAILURE;
+        return StatusType::INVALID_INPUT;
     }
     if (m_contestantTree->findKey(contestantId,m_contestantTree->getRoot()) == nullptr){
         return StatusType::FAILURE;
@@ -294,9 +299,9 @@ output_t<int> Olympics::get_medals(int countryId){
 
 output_t<int> Olympics::get_team_strength(int teamId){
     if (teamId <= 0 || m_TeamTree->findKey(teamId,m_TeamTree->getRoot()) == nullptr){
-        return StatusType::FAILURE;
+        return StatusType::INVALID_INPUT;
     }
-    return m_TeamTree->findKey(teamId,m_TeamTree->getRoot())->getData()->getTeamStrength();
+    return (m_TeamTree->findKey(teamId,m_TeamTree->getRoot())->getData()->getTeamStrength());
 }
 
 StatusType Olympics::unite_teams(int teamId1,int teamId2) {
@@ -431,6 +436,9 @@ StatusType Olympics::unite_teams(int teamId1,int teamId2) {
         }
     }
     StrengthInfo** strengthArrayUniteNoRep = new StrengthInfo * [newNumOfContestants];
+    if(strengthArrayUniteNoRep == nullptr){
+        return StatusType::INVALID_INPUT;
+    }
     for (int j=0, i = 0 ; i <team1->getNumOfContestant()+team2->getNumOfContestant() ; ++i) {
         if (strengthArrayUniteRep[i]!= nullptr) {
             strengthArrayUniteNoRep[j] = strengthArrayUniteRep[i];
@@ -469,8 +477,20 @@ StatusType Olympics::unite_teams(int teamId1,int teamId2) {
     }
 
     StrengthInfo** newStrengthArrayLeft = new StrengthInfo * [newNumOfContestantsLeft];
+    if (newStrengthArrayLeft == nullptr){
+        return StatusType::INVALID_INPUT;
+    }
     StrengthInfo** newStrengthArrayMiddle = new StrengthInfo * [newNumOfContestantsMiddle];
+    if(newStrengthArrayMiddle == nullptr){
+        delete newStrengthArrayLeft;
+        return StatusType::INVALID_INPUT;
+    }
     StrengthInfo** newStrengthArrayRight = new StrengthInfo * [newNumOfContestantsRight];
+    if ( newStrengthArrayRight == nullptr){
+        delete newStrengthArrayLeft;
+        delete newStrengthArrayMiddle;
+        return StatusType::INVALID_INPUT;
+    }
 
     for (int il, im,ir, i = 0; i < newNumOfContestants ; ++i) {
         if ( strengthArrayUniteNoRep[i]->getTree() == 'L') {
@@ -501,14 +521,26 @@ StatusType Olympics::unite_teams(int teamId1,int teamId2) {
     StrengthPairKey nullKey = StrengthPairKey(-1, -1);
 
     AVLTree<StrengthPairKey, StrengthInfo>* newLeftTreeStrength = new AVLTree<StrengthPairKey, StrengthInfo>();
+    if (newLeftTreeStrength == nullptr){
+        return StatusType::INVALID_INPUT;
+    }
     newLeftTreeStrength->buildTreeBeforeInsertArray(newNumOfContestantsLeft, nullKey);
     team1->setLeftTreeStrength(newLeftTreeStrength);
 
     AVLTree<StrengthPairKey, StrengthInfo>* newMiddleTreeStrength = new AVLTree<StrengthPairKey, StrengthInfo>();
+    if(newMiddleTreeStrength == nullptr){
+        delete newLeftTreeStrength;
+        return StatusType::INVALID_INPUT;
+    }
     newMiddleTreeStrength->buildTreeBeforeInsertArray(newNumOfContestantsMiddle, nullKey);
     team1->setMiddleTreeStrength(newMiddleTreeStrength);
 
     AVLTree<StrengthPairKey, StrengthInfo>* newRightTreeStrength = new AVLTree<StrengthPairKey, StrengthInfo>();
+    if (newRightTreeStrength == nullptr){
+        delete newLeftTreeStrength;
+        delete newMiddleTreeStrength;
+        return StatusType::INVALID_INPUT;
+    }
     newRightTreeStrength->buildTreeBeforeInsertArray(newNumOfContestantsRight, nullKey);
     team1->setRightTreeStrength(newRightTreeStrength);
 
@@ -535,14 +567,35 @@ StatusType Olympics::unite_teams(int teamId1,int teamId2) {
 
 
     AVLTree<int, Contestant>* newLeftTreeID = new AVLTree<int, Contestant>();
+    if (newLeftTreeID == nullptr){
+        delete newLeftTreeStrength;
+        delete newMiddleTreeStrength;
+        delete newRightTreeStrength;
+        return StatusType::INVALID_INPUT;
+    }
     newLeftTreeID->buildTreeBeforeInsertArray(newNumOfContestantsLeft, -1);
     team1->setLeftTreeID(newLeftTreeID);
 
     AVLTree<int, Contestant>* newMiddleTreeID = new AVLTree<int, Contestant>();
+    if(newMiddleTreeID == nullptr){
+        delete newLeftTreeStrength;
+        delete newMiddleTreeStrength;
+        delete newRightTreeStrength;
+        delete newLeftTreeID;
+        return StatusType::INVALID_INPUT;
+    }
     newMiddleTreeID->buildTreeBeforeInsertArray(newNumOfContestantsMiddle, -1);
     team1->setMiddleTreeID(newMiddleTreeID);
 
     AVLTree<int, Contestant>* newRightTreeID = new AVLTree<int, Contestant>();
+    if (newRightTreeID){
+        delete newLeftTreeStrength;
+        delete newMiddleTreeStrength;
+        delete newRightTreeStrength;
+        delete newLeftTreeID;
+        delete newMiddleTreeID;
+        return StatusType::INVALID_INPUT;
+    }
     newRightTreeID->buildTreeBeforeInsertArray(newNumOfContestantsRight, -1);
     team1->setRightTreeID(newRightTreeID);
 
@@ -574,11 +627,11 @@ StatusType Olympics::play_match(int teamId1,int teamId2){
     int medalT1 = m_TeamTree->findKey(teamId1, m_TeamTree->getRoot())->getData()->getCountry()->get_medals();
     int medalT2 = m_TeamTree->findKey(teamId2, m_TeamTree->getRoot())->getData()->getCountry()->get_medals();
     int pointTeam1 = medalT1 + get_team_strength(teamId1).ans();
-    int pointTeam2 = medalT2 + get_team_strength(teamId1).ans();
+    int pointTeam2 = medalT2 + get_team_strength(teamId2).ans();
     if(pointTeam1 > pointTeam2){
         m_TeamTree->findKey(teamId1, m_TeamTree->getRoot())->getData()->getCountry()->countryWonMedal();
     }
-    else if (pointTeam1 > pointTeam2){
+    else if (pointTeam1 < pointTeam2){
         m_TeamTree->findKey(teamId2, m_TeamTree->getRoot())->getData()->getCountry()->countryWonMedal();
     }
     return StatusType::SUCCESS;
