@@ -117,22 +117,17 @@ void Team::addContestantToChosenTeam(Node<int,Contestant>* nodeToAdd,Node<Streng
 void Team::removeContestantFromChosenTeam(int contestantID, int contestantStrength) {
     //assumes that the contestant and team found and that the sport identical plus country
     StrengthPairKey key = StrengthPairKey(contestantStrength, contestantID);
-    if (m_rightTreeID != nullptr) {
-        int rightMin = m_rightTreeID->getMinOfTree()->getKey();
-        if (contestantID > rightMin) {
+    if (m_rightTreeID->getRoot() != nullptr &&m_rightTreeID->findKey(contestantID, m_rightTreeID->getRoot()) ) {
             m_rightTreeID->setRoot(m_rightTreeID->DeleteNodeFromTree(m_rightTreeID->getRoot(), contestantID));
             m_leftTreeStrength->setRoot(m_leftTreeStrength->DeleteNodeFromTree(m_leftTreeStrength->getRoot(), key));
-        }
     }
-        //belong to the left tree
-    else if (m_leftTreeID != nullptr) {
-        int leftMax = m_leftTreeID->getMaxOfTree()->getKey();
-        if (contestantID > leftMax) {
-            m_leftTreeID->setRoot(m_leftTreeID->DeleteNodeFromTree(m_leftTreeID->getRoot(), contestantID));
-            m_leftTreeStrength->setRoot(m_leftTreeStrength->DeleteNodeFromTree(m_leftTreeStrength->getRoot(), key));
-            // Node belongs to the middle tree
-        }
-    } else if (m_middleTreeID != nullptr) {
+    if (m_leftTreeID->getRoot() != nullptr && m_leftTreeID->findKey(contestantID, m_leftTreeID->getRoot())) {
+        m_leftTreeID->setRoot(m_leftTreeID->DeleteNodeFromTree(m_leftTreeID->getRoot(), contestantID));
+        m_leftTreeStrength->setRoot(m_leftTreeStrength->DeleteNodeFromTree(m_leftTreeStrength->getRoot(), key));
+        // Node belongs to the middle tree
+    }
+    //belong to the left tree
+    if (m_middleTreeID->getRoot() != nullptr && m_middleTreeID->findKey(contestantID, m_middleTreeID->getRoot())) {
         m_middleTreeID->setRoot(m_middleTreeID->DeleteNodeFromTree(m_middleTreeID->getRoot(), contestantID));
         m_middleTreeStrength->setRoot(m_middleTreeStrength->DeleteNodeFromTree(m_middleTreeStrength->getRoot(), key));
     }
@@ -297,7 +292,7 @@ void Team::evenTeamsTrees () {
             Node<StrengthPairKey,StrengthInfo> *newStrengthNode2 = new Node<StrengthPairKey,StrengthInfo> (key2 , strengthNode2->getData());
 
             m_rightTreeStrength->setRoot(m_rightTreeStrength->DeleteNodeFromTree(m_rightTreeStrength->getRoot(), key2));
-            m_middleTreeStrength->setRoot(m_middleTreeStrength->insertNodeToTree( newStrengthNode2,m_rightTreeStrength->getRoot()));
+            m_middleTreeStrength->setRoot(m_middleTreeStrength->insertNodeToTree( newStrengthNode2,m_middleTreeStrength->getRoot()));
 
 
             // Move the min node from the middle tree to the left tree
@@ -527,23 +522,22 @@ void Team::calcAusterity(){
         m_austerityStrength = 0;
         return;
     }
-    if (m_numOfContestant == 6){
-        m_austerityStrength = m_teamStrength;
-        return;
-    }
+
     int austerityMax = m_teamStrength;
     int curAusterity = 0;
-    curAusterity = calcAusThreeFromOneTree(m_leftTreeID, m_leftTreeStrength);
-    if (curAusterity > austerityMax){
-        austerityMax = curAusterity;
-    }
-    curAusterity = calcAusThreeFromOneTree(m_middleTreeID, m_middleTreeStrength);
-    if (curAusterity > austerityMax){
-        austerityMax = curAusterity;
-    }
-    curAusterity = calcAusThreeFromOneTree(m_rightTreeID, m_rightTreeStrength);
-    if (curAusterity > austerityMax){
-        austerityMax = curAusterity;
+    if (m_numOfContestant != 6  ) {
+        curAusterity = calcAusThreeFromOneTree(m_leftTreeID, m_leftTreeStrength);
+        if (curAusterity > austerityMax) {
+            austerityMax = curAusterity;
+        }
+        curAusterity = calcAusThreeFromOneTree(m_middleTreeID, m_middleTreeStrength);
+        if (curAusterity > austerityMax) {
+            austerityMax = curAusterity;
+        }
+        curAusterity = calcAusThreeFromOneTree(m_rightTreeID, m_rightTreeStrength);
+        if (curAusterity > austerityMax) {
+            austerityMax = curAusterity;
+        }
     }
     curAusterity = calcAusTwoAndOneNoProblem(m_middleTreeID, m_middleTreeStrength, m_leftTreeID, m_leftTreeStrength);
     if (curAusterity > austerityMax){
