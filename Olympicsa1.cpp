@@ -15,7 +15,7 @@ StatusType Olympics::add_country(int countryId, int medals){
     if (countryId <= 0 || medals <= 0){
         return StatusType::INVALID_INPUT;
     }
-    if(m_countryTree->getRoot() != nullptr && m_countryTree->findKey(countryId, m_countryTree->getRoot()) == nullptr){
+    if(m_countryTree->getRoot() != nullptr && m_countryTree->findKey(countryId, m_countryTree->getRoot()) != nullptr){
         return StatusType::FAILURE;
     }
     Country* newCountry = new Country(countryId,medals);
@@ -201,10 +201,11 @@ StatusType Olympics::remove_contestant_from_team(int teamId,int contestantId){
             flag = true;
             int contestantStrength = contestantNode->getData()->get_strength();
             //removes and updated the team strength and even trees
+            teamNode->getData()->decreaseNumOfContestants();
             teamNode->getData()->removeContestantFromChosenTeam(contestantId, contestantStrength);
             //update the fields
             contestantNode->getData()->decreaseTeamNumAndArray(teamId);
-            teamNode->getData()->decreaseNumOfContestants();
+            break;
         }
     }
     if (flag) return StatusType::SUCCESS;

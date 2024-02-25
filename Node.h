@@ -84,16 +84,16 @@ bool Node<K,D>::isSameKey (const Node other) const {
 //changedddddddddddddddddddd
 template<typename K, typename D>
 int Node<K,D>::getHeight() const {
-    if(this->left == nullptr && this->right == nullptr){
+    if(left == nullptr && right == nullptr){
         return 0;
     }
-    if(this->left == nullptr){
-        return 1 + this->right->height;
+    if(left == nullptr){
+        return 1 + right->height;
     }
-    if(this->right == nullptr){
-        return 1+ this->left->height;
+    if(right == nullptr){
+        return 1+ left->height;
     }
-    return 1 + max(this->left->height , this->right->height);
+    return 1 + max(left->height , right->height);
 }
 
 template<typename K, typename D>

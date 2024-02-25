@@ -73,8 +73,11 @@ public:
     void increaseNumOfContestants();
     void decreaseNumOfContestants();
 
-    int calcAusTwoAndOneWithProblem(AVLTree<int, Contestant>* IDTreeRemoveTwo,AVLTree<StrengthPairKey, StrengthInfo>* StrengthTreeRemoveTwo,
+    int calcAusTwoAndOneWithProblemMovingLeft(AVLTree<int, Contestant>* IDTreeRemoveTwo,AVLTree<StrengthPairKey, StrengthInfo>* StrengthTreeRemoveTwo,
                                         AVLTree<int, Contestant>* IDTreeRemoveOne,AVLTree<StrengthPairKey, StrengthInfo>* StrengthTreeRemoveOne);
+
+    int calcAusTwoAndOneWithProblemMovingRight(AVLTree<int, Contestant>* IDTreeRemoveTwo,AVLTree<StrengthPairKey, StrengthInfo>* StrengthTreeRemoveTwo,
+                                              AVLTree<int, Contestant>* IDTreeRemoveOne,AVLTree<StrengthPairKey, StrengthInfo>* StrengthTreeRemoveOne);
 
 
     int calcAusTwoAndOneNoProblem(AVLTree<int, Contestant>* IDTreeRemoveTwo,AVLTree<StrengthPairKey, StrengthInfo>* StrengthTreeRemoveTwo,
@@ -85,5 +88,7 @@ public:
 
     };
 
+int max (int a, int b);
+int min (int a, int b);
 
 #endif //MIVANI1_WET1_UPDATED_GIT_TEAM_H
