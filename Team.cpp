@@ -391,6 +391,7 @@ int Team::calcAusThreeFromOneTree(AVLTree<int, Contestant>* IDTreeRemove,AVLTree
     StrengthTreeRemove->setRoot(StrengthTreeRemove->insertNodeToTree(newNodeStrength3, StrengthTreeRemove->getRoot()));
 
     evenTeamsTrees();
+
     return AusStrength;
 }
 
@@ -449,7 +450,7 @@ int Team::calcAusTwoAndOneNoProblem(AVLTree<int, Contestant>* IDTreeRemoveTwo,AV
     return AusStrength;
 }
 
-int Team::calcAusTwoAndOneWithProblemMovingRight(AVLTree<int, Contestant>* IDTreeRemoveTwo,AVLTree<StrengthPairKey, StrengthInfo>* StrengthTreeRemoveTwo,
+int Team::calcAusTwoAndOneWithProblemMovingLeft(AVLTree<int, Contestant>* IDTreeRemoveTwo,AVLTree<StrengthPairKey, StrengthInfo>* StrengthTreeRemoveTwo,
                                 AVLTree<int, Contestant>* IDTreeRemoveOne,AVLTree<StrengthPairKey, StrengthInfo>* StrengthTreeRemoveOne){
 
     // removes min node from two strength tree
@@ -548,7 +549,7 @@ int Team::calcAusTwoAndOneWithProblemMovingRight(AVLTree<int, Contestant>* IDTre
 }
 
 
-int Team::calcAusTwoAndOneWithProblemMovingLeft(AVLTree<int, Contestant>* IDTreeRemoveTwo,AVLTree<StrengthPairKey, StrengthInfo>* StrengthTreeRemoveTwo,
+int Team::calcAusTwoAndOneWithProblemMovingRight(AVLTree<int, Contestant>* IDTreeRemoveTwo,AVLTree<StrengthPairKey, StrengthInfo>* StrengthTreeRemoveTwo,
                                                  AVLTree<int, Contestant>* IDTreeRemoveOne,AVLTree<StrengthPairKey, StrengthInfo>* StrengthTreeRemoveOne){
 
     // removes min node from two strength tree
