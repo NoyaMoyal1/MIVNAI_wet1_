@@ -3,7 +3,7 @@
 
 
 Olympics::Olympics() : m_TeamTree(new AVLTree<int, Team>()), m_countryTree(new AVLTree<int, Country>()) ,
-m_contestantTree(new AVLTree<int, Contestant>()){}
+                       m_contestantTree(new AVLTree<int, Contestant>()){}
 
 Olympics::~Olympics(){
     delete m_TeamTree;
@@ -166,13 +166,13 @@ StatusType Olympics::add_contestant_to_team(int teamId,int contestantId){
     }
     Node<int,Contestant>* contestantNodeToInsert =  new Node<int,Contestant>(contestantId,contestantNode->getData());
     if (contestantNodeToInsert == nullptr){
-        return StatusType::INVALID_INPUT;
+        return StatusType::ALLOCATION_ERROR;
     }
     StrengthPairKey key = StrengthPairKey(contestantNode->getData()->get_strength() ,contestantId);
     Node<StrengthPairKey,StrengthInfo>* StrengthNodeToInsert =  new Node<StrengthPairKey,StrengthInfo>(key,contestantNodeToInsert->getData()->getStrengthInfo());
     if (StrengthNodeToInsert == nullptr){
         delete contestantNodeToInsert;
-        return StatusType::INVALID_INPUT;
+        return StatusType::ALLOCATION_ERROR;
     }
 
     contestantNodeToInsert->getData()->increaseTeamNumAndArray(teamId);
@@ -308,7 +308,7 @@ StatusType Olympics::unite_teams(int teamId1,int teamId2) {
     if (teamId1 <= 0 || teamId2 <= 0 || teamId1 == teamId2) {
         return StatusType::INVALID_INPUT;
     }
-    
+
     if (m_TeamTree->findKey(teamId1, m_TeamTree->getRoot()) == nullptr ||
         m_TeamTree->findKey(teamId2, m_TeamTree->getRoot()) == nullptr) {
         return StatusType::FAILURE;
@@ -387,7 +387,7 @@ StatusType Olympics::unite_teams(int teamId1,int teamId2) {
 
 
     mergeStrength(strengthArray1, team1->getNumOfContestant(), strengthArray2, team2->getNumOfContestant()
-                  ,strengthArrayUniteRep);
+            ,strengthArrayUniteRep);
 
     delete[] strengthArrayLeft1;
     delete[] strengthArrayMiddle1;
@@ -408,8 +408,6 @@ StatusType Olympics::unite_teams(int teamId1,int teamId2) {
     delete[] contestantArray1;
     delete[] contestantArray2;
 
-    // delete[] strengthArray1; double deleting
-  //  delete[] strengthArray2;
 
     int countRep= 0;
     for (int i = 0; i <team1->getNumOfContestant()+team2->getNumOfContestant()-1  ; ++i) {
@@ -430,14 +428,14 @@ StatusType Olympics::unite_teams(int teamId1,int teamId2) {
 
     for (int i = 0; i <team1->getNumOfContestant()+team2->getNumOfContestant()-1  ; ++i) {
         if ((strengthArrayUniteRep[i]->getStrengthFromInfo() == strengthArrayUniteRep[i+1]->getStrengthFromInfo()) &&
-                (strengthArrayUniteRep[i]->getIdFromInfo() == strengthArrayUniteRep[i+1]->getIdFromInfo()) ) {
+            (strengthArrayUniteRep[i]->getIdFromInfo() == strengthArrayUniteRep[i+1]->getIdFromInfo()) ) {
             strengthArrayUniteRep[i]= nullptr;
             i++;
         }
     }
     StrengthInfo** strengthArrayUniteNoRep = new StrengthInfo * [newNumOfContestants];
     if(strengthArrayUniteNoRep == nullptr){
-        return StatusType::INVALID_INPUT;
+        return StatusType::ALLOCATION_ERROR;
     }
     for (int j=0, i = 0 ; i <team1->getNumOfContestant()+team2->getNumOfContestant() ; ++i) {
         if (strengthArrayUniteRep[i]!= nullptr) {
@@ -472,24 +470,24 @@ StatusType Olympics::unite_teams(int teamId1,int teamId2) {
         contestantArrayUniteNoRep[i]->getStrengthInfo()->setTree('M');
     }
     for (int i = newNumOfContestantsLeft+newNumOfContestantsMiddle ; i <newNumOfContestantsLeft+newNumOfContestantsMiddle
-                                                                    +newNumOfContestantsRight; ++i) {
+                                                                        +newNumOfContestantsRight; ++i) {
         contestantArrayUniteNoRep[i]->getStrengthInfo()->setTree('R');
     }
 
     StrengthInfo** newStrengthArrayLeft = new StrengthInfo * [newNumOfContestantsLeft];
     if (newStrengthArrayLeft == nullptr){
-        return StatusType::INVALID_INPUT;
+        return StatusType::ALLOCATION_ERROR;
     }
     StrengthInfo** newStrengthArrayMiddle = new StrengthInfo * [newNumOfContestantsMiddle];
     if(newStrengthArrayMiddle == nullptr){
         delete newStrengthArrayLeft;
-        return StatusType::INVALID_INPUT;
+        return StatusType::ALLOCATION_ERROR;
     }
     StrengthInfo** newStrengthArrayRight = new StrengthInfo * [newNumOfContestantsRight];
     if ( newStrengthArrayRight == nullptr){
         delete newStrengthArrayLeft;
         delete newStrengthArrayMiddle;
-        return StatusType::INVALID_INPUT;
+        return StatusType::ALLOCATION_ERROR;
     }
 
     for (int il = 0, im = 0,ir = 0 , i = 0; i < newNumOfContestants ; ++i) {
@@ -522,7 +520,7 @@ StatusType Olympics::unite_teams(int teamId1,int teamId2) {
 
     AVLTree<StrengthPairKey, StrengthInfo>* newLeftTreeStrength = new AVLTree<StrengthPairKey, StrengthInfo>();
     if (newLeftTreeStrength == nullptr){
-        return StatusType::INVALID_INPUT;
+        return StatusType::ALLOCATION_ERROR;
     }
     newLeftTreeStrength->buildTreeBeforeInsertArray(newNumOfContestantsLeft, nullKey);
     team1->setLeftTreeStrength(newLeftTreeStrength);
@@ -530,7 +528,7 @@ StatusType Olympics::unite_teams(int teamId1,int teamId2) {
     AVLTree<StrengthPairKey, StrengthInfo>* newMiddleTreeStrength = new AVLTree<StrengthPairKey, StrengthInfo>();
     if(newMiddleTreeStrength == nullptr){
         delete newLeftTreeStrength;
-        return StatusType::INVALID_INPUT;
+        return StatusType::ALLOCATION_ERROR;
     }
     newMiddleTreeStrength->buildTreeBeforeInsertArray(newNumOfContestantsMiddle, nullKey);
     team1->setMiddleTreeStrength(newMiddleTreeStrength);
@@ -539,7 +537,7 @@ StatusType Olympics::unite_teams(int teamId1,int teamId2) {
     if (newRightTreeStrength == nullptr){
         delete newLeftTreeStrength;
         delete newMiddleTreeStrength;
-        return StatusType::INVALID_INPUT;
+        return StatusType::ALLOCATION_ERROR;
     }
     newRightTreeStrength->buildTreeBeforeInsertArray(newNumOfContestantsRight, nullKey);
     team1->setRightTreeStrength(newRightTreeStrength);
@@ -571,7 +569,7 @@ StatusType Olympics::unite_teams(int teamId1,int teamId2) {
         delete newLeftTreeStrength;
         delete newMiddleTreeStrength;
         delete newRightTreeStrength;
-        return StatusType::INVALID_INPUT;
+        return StatusType::ALLOCATION_ERROR;
     }
     newLeftTreeID->buildTreeBeforeInsertArray(newNumOfContestantsLeft, -1);
     team1->setLeftTreeID(newLeftTreeID);
@@ -582,7 +580,7 @@ StatusType Olympics::unite_teams(int teamId1,int teamId2) {
         delete newMiddleTreeStrength;
         delete newRightTreeStrength;
         delete newLeftTreeID;
-        return StatusType::INVALID_INPUT;
+        return StatusType::ALLOCATION_ERROR;
     }
     newMiddleTreeID->buildTreeBeforeInsertArray(newNumOfContestantsMiddle, -1);
     team1->setMiddleTreeID(newMiddleTreeID);
@@ -594,7 +592,7 @@ StatusType Olympics::unite_teams(int teamId1,int teamId2) {
         delete newRightTreeStrength;
         delete newLeftTreeID;
         delete newMiddleTreeID;
-        return StatusType::INVALID_INPUT;
+        return StatusType::ALLOCATION_ERROR;
     }
     newRightTreeID->buildTreeBeforeInsertArray(newNumOfContestantsRight, -1);
     team1->setRightTreeID(newRightTreeID);
@@ -617,11 +615,11 @@ StatusType Olympics::play_match(int teamId1,int teamId2){
         return StatusType::INVALID_INPUT;
     }
     if (m_TeamTree->findKey(teamId1, m_TeamTree->getRoot()) == nullptr ||
-    m_TeamTree->findKey(teamId2, m_TeamTree->getRoot()) == nullptr){
+        m_TeamTree->findKey(teamId2, m_TeamTree->getRoot()) == nullptr){
         return StatusType::FAILURE;
     }
     if(m_TeamTree->findKey(teamId1, m_TeamTree->getRoot())->getData()->getSport() !=
-    m_TeamTree->findKey(teamId2, m_TeamTree->getRoot())->getData()->getSport()){
+       m_TeamTree->findKey(teamId2, m_TeamTree->getRoot())->getData()->getSport()){
         return StatusType::FAILURE;
     }
     int medalT1 = m_TeamTree->findKey(teamId1, m_TeamTree->getRoot())->getData()->getCountry()->get_medals();
@@ -642,10 +640,9 @@ output_t<int> Olympics::austerity_measures(int teamId){
         return StatusType::INVALID_INPUT;
     }
     if(m_TeamTree->findKey(teamId,m_TeamTree->getRoot()) == nullptr ||
-    m_TeamTree->findKey(teamId,m_TeamTree->getRoot())->getData()->getNumOfContestant() < 3){
+       m_TeamTree->findKey(teamId,m_TeamTree->getRoot())->getData()->getNumOfContestant() < 3){
         return StatusType::FAILURE;
     }
 
     return (m_TeamTree->findKey(teamId,m_TeamTree->getRoot())->getData()->getAusterity());
 }
-

@@ -35,6 +35,7 @@ public:
 
     bool isSameKey (const Node other) const ;
 
+    void setKey(K newKey);
     int getHeight () const ;
     int getBalanceFactor() const;
     Node<K,D>* getRight() const;
@@ -47,8 +48,8 @@ public:
     void setHeight(int newHeight);
     void setData(D* newData);
     int max (int a, int b) const;
-    void setKey(K newKey);
 };
+
 template <typename K, typename D>
 void Node<K,D>::setKey(K newKey){
     this->key = newKey;
