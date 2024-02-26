@@ -8,7 +8,7 @@
 template <typename K, typename D>
 class Node {
 private:
-    K key;
+    K key ;
     D *data;
     Node *left;
     Node *right;
@@ -16,7 +16,6 @@ private:
 
 public:
 //constructor
-    Node(): key(NULL), data(nullptr), left(nullptr), right(nullptr), height(0) {}
     explicit Node(K key): key(key), data(nullptr), left(nullptr), right(nullptr), height(0) {}
     Node(K key, D* data): key(key), data(data), left(nullptr), right(nullptr), height(0) {}
 
@@ -24,10 +23,14 @@ public:
     Node(Node<K, D>* nodePtr): key(nodePtr->key), data(nodePtr->data), left(nodePtr->left), right(nodePtr->right), height(nodePtr->height) {}
 //destructor - when removing template class , first destruct the template and then the node
     virtual~ Node(){
-        delete left;
-        left = nullptr;
-        delete right;
-        right = nullptr;
+        if (left) {
+            delete left;
+            left = nullptr;
+        }
+        if (right) {
+            delete right;
+            right = nullptr;
+        }
     }
 
     bool isSameKey (const Node other) const ;
@@ -81,16 +84,16 @@ bool Node<K,D>::isSameKey (const Node other) const {
 //changedddddddddddddddddddd
 template<typename K, typename D>
 int Node<K,D>::getHeight() const {
-    if(this->left == nullptr && this->right == nullptr){
+    if(left == nullptr && right == nullptr){
         return 0;
     }
-    if(this->left == nullptr){
-        return 1 + this->right->height;
+    if(left == nullptr){
+        return 1 + right->height;
     }
-    if(this->right == nullptr){
-        return 1+ this->left->height;
+    if(right == nullptr){
+        return 1+ left->height;
     }
-    return 1 + max(this->left->height , this->right->height);
+    return 1 + max(left->height , right->height);
 }
 
 template<typename K, typename D>

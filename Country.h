@@ -1,9 +1,6 @@
-//
-// Created by noyam on 21/02/2024.
-//
+#ifndef MIVANI1_WET1_UPDATED_GIT_COUNTRY_H
+#define MIVANI1_WET1_UPDATED_GIT_COUNTRY_H
 
-#ifndef TRY2_COPY_COUNTRY_H
-#define TRY2_COPY_COUNTRY_H
 #include "wet1util.h"
 
 class Country {
@@ -26,6 +23,7 @@ public:
     void addOneTeam();
     void addOneContestant();
 };
+
 
 
 

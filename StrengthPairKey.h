@@ -23,4 +23,3 @@ public:
 };
 
 #endif //MIVNAI_WET1_STRENGTHPAIRKEY_H
-

@@ -32,7 +32,12 @@ public:
     int get_strength();
     StrengthInfo* getStrengthInfo();
     void set_strength(int power);
+    void increaseTeamNumAndArray(int teamID);
+    void decreaseTeamNumAndArray(int teamID);
+
 };
+
+void mergeContestant(Contestant** a, int na , Contestant** b, int nb , Contestant** c);
 
 
 #endif //MIVANI1_WET1_UPDATED_GIT_CONTESTANT_H

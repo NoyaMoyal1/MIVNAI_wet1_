@@ -31,6 +31,15 @@ public:
         m_middleTreeStrength = new AVLTree<StrengthPairKey,StrengthInfo>();
         m_rightTreeStrength = new AVLTree<StrengthPairKey,StrengthInfo>();
     }
+    ~Team(){
+        m_countryPtr = nullptr;
+        delete m_leftTreeStrength;
+        delete m_middleTreeStrength;
+        delete m_rightTreeStrength;
+        delete m_leftTreeID;
+        delete m_middleTreeID;
+        delete m_rightTreeID;
+    }
 
     AVLTree<StrengthPairKey,StrengthInfo>* getLeftTreeStrength();
     AVLTree<StrengthPairKey,StrengthInfo>* getRightTreeStrength();
@@ -38,18 +47,48 @@ public:
     AVLTree<int,Contestant>* getLeftTreeID();
     AVLTree<int,Contestant>* getRightTreeID();
     AVLTree<int,Contestant>* getMiddleTreeID();
+
+    void setLeftTreeStrength(AVLTree<StrengthPairKey,StrengthInfo>* newTree);
+    void setRightTreeStrength(AVLTree<StrengthPairKey,StrengthInfo>* newTree);
+    void setMiddleTreeStrength(AVLTree<StrengthPairKey,StrengthInfo>* newTree);
+    void setLeftTreeID(AVLTree<int,Contestant>* newTree);
+    void setRightTreeID(AVLTree<int,Contestant>* newTree);
+    void setMiddleTreeID(AVLTree<int,Contestant>* newTree);
+
+    void setNumOfContestant (int num);
     int getNumOfContestant ();
     int getTeamID();
     void calcAusterity();
-    int calcAusterity1();
+    int getAusterity();
+
     Country* getCountry();
 
+    int getTeamStrength ();
     int calcStrength();
     void setTeamStrength(int strength);
     Sport getSport();
     void evenTeamsTrees ();
     void addContestantToChosenTeam(Node<int,Contestant>* nodeToAdd,Node<StrengthPairKey,StrengthInfo>* strengthNode );
+    void removeContestantFromChosenTeam(int contestantID, int contestantStrength);
+    void increaseNumOfContestants();
+    void decreaseNumOfContestants();
+
+    int calcAusTwoAndOneWithProblemMovingLeft(AVLTree<int, Contestant>* IDTreeRemoveTwo,AVLTree<StrengthPairKey, StrengthInfo>* StrengthTreeRemoveTwo,
+                                              AVLTree<int, Contestant>* IDTreeRemoveOne,AVLTree<StrengthPairKey, StrengthInfo>* StrengthTreeRemoveOne);
+
+    int calcAusTwoAndOneWithProblemMovingRight(AVLTree<int, Contestant>* IDTreeRemoveTwo,AVLTree<StrengthPairKey, StrengthInfo>* StrengthTreeRemoveTwo,
+                                               AVLTree<int, Contestant>* IDTreeRemoveOne,AVLTree<StrengthPairKey, StrengthInfo>* StrengthTreeRemoveOne);
+
+
+    int calcAusTwoAndOneNoProblem(AVLTree<int, Contestant>* IDTreeRemoveTwo,AVLTree<StrengthPairKey, StrengthInfo>* StrengthTreeRemoveTwo,
+                                  AVLTree<int, Contestant>* IDTreeRemoveOne,AVLTree<StrengthPairKey, StrengthInfo>* StrengthTreeRemoveOne);
+
+    int calcAusThreeFromOneTree(AVLTree<int, Contestant>* IDTreeRemove,AVLTree<StrengthPairKey, StrengthInfo>* StrengthTreeRemove);
+
+
 };
 
+int max (int a, int b);
+int min (int a, int b);
 
 #endif //MIVANI1_WET1_UPDATED_GIT_TEAM_H
