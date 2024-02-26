@@ -145,16 +145,28 @@ Node<K,D>* AVLTree<K,D>::DeleteNodeFromTree(Node<K,D>* currRoot, K key) {
 
         }
         else if (currRoot->getLeft() == nullptr) {// have one child
-            Node<K,D>* temp = new Node<K,D>(currRoot->getRight());
-            m_nodeCount--;
-            delete currRoot;
-            return temp;
+            try{
+                Node<K,D>* temp = new Node<K,D>(currRoot->getRight());
+                m_nodeCount--;
+                delete currRoot;
+                return temp;
+            }
+            catch (const std::bad_alloc &e)
+            {
+                return StatusType::ALLOCATION_ERROR;
+            }
         }
         else if (currRoot->getRight() == nullptr) {// have one child
-            Node<K,D>* temp = new Node<K,D>(currRoot->getLeft());
-            m_nodeCount--;
-            delete currRoot;
-            return temp;
+            try{
+                Node<K,D>* temp = new Node<K,D>(currRoot->getLeft());
+                m_nodeCount--;
+                delete currRoot;
+                return temp;
+            }
+            catch (const std::bad_alloc &e)
+            {
+                return StatusType::ALLOCATION_ERROR;
+            }
         }
         else {//have two child
             Node<K,D>* temp = currRoot->getRight();
@@ -275,10 +287,16 @@ Node<K,D>* AVLTree<K,D>::buildFullTreeRoot(int sizeOfTree, K nullKey){
     if(sizeOfTree == 0){
         return nullptr;
     }
-    Node<K,D>* root = new Node<K,D>(nullKey);
-    root->setLeft(buildFullTreeRoot((sizeOfTree-1)/2, nullKey));
-    root->setRight(buildFullTreeRoot((sizeOfTree-1)/2, nullKey));
-    return root;
+    try{
+        Node<K,D>* root = new Node<K,D>(nullKey);
+        root->setLeft(buildFullTreeRoot((sizeOfTree-1)/2, nullKey));
+        root->setRight(buildFullTreeRoot((sizeOfTree-1)/2, nullKey));
+        return root;
+    }
+    catch (const std::bad_alloc &e)
+    {
+        return StatusType::ALLOCATION_ERROR;
+    }
 }
 
 template <typename K, typename D>
