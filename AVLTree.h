@@ -153,7 +153,7 @@ Node<K,D>* AVLTree<K,D>::DeleteNodeFromTree(Node<K,D>* currRoot, K key) {
             }
             catch (const std::bad_alloc &e)
             {
-                return StatusType::ALLOCATION_ERROR;
+                throw StatusType::ALLOCATION_ERROR;
             }
         }
         else if (currRoot->getRight() == nullptr) {// have one child
@@ -165,7 +165,7 @@ Node<K,D>* AVLTree<K,D>::DeleteNodeFromTree(Node<K,D>* currRoot, K key) {
             }
             catch (const std::bad_alloc &e)
             {
-                return StatusType::ALLOCATION_ERROR;
+                throw StatusType::ALLOCATION_ERROR;
             }
         }
         else {//have two child
@@ -295,7 +295,7 @@ Node<K,D>* AVLTree<K,D>::buildFullTreeRoot(int sizeOfTree, K nullKey){
     }
     catch (const std::bad_alloc &e)
     {
-        return StatusType::ALLOCATION_ERROR;
+        throw StatusType::ALLOCATION_ERROR;
     }
 }
 
