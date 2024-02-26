@@ -408,8 +408,8 @@ StatusType Olympics::unite_teams(int teamId1,int teamId2) {
     delete[] contestantArray1;
     delete[] contestantArray2;
 
-    delete[] strengthArray1;
-    delete[] strengthArray2;
+    // delete[] strengthArray1; double deleting
+  //  delete[] strengthArray2;
 
     int countRep= 0;
     for (int i = 0; i <team1->getNumOfContestant()+team2->getNumOfContestant()-1  ; ++i) {
@@ -492,7 +492,7 @@ StatusType Olympics::unite_teams(int teamId1,int teamId2) {
         return StatusType::INVALID_INPUT;
     }
 
-    for (int il, im,ir, i = 0; i < newNumOfContestants ; ++i) {
+    for (int il = 0, im = 0,ir = 0 , i = 0; i < newNumOfContestants ; ++i) {
         if ( strengthArrayUniteNoRep[i]->getTree() == 'L') {
             newStrengthArrayLeft[il] = strengthArrayUniteNoRep[i];
             il++;
