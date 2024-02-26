@@ -703,3 +703,34 @@ void Team::calcAusterity(){
     m_austerityStrength = austerityMax;
     return;
 }
+
+void Team::setContestantKeyAfterUnite(Node<int, Contestant>* curRoot) {
+    if (curRoot == nullptr) {
+        return;
+    }
+    setContestantKeyAfterUnite(curRoot->getLeft());
+    curRoot->setKey(curRoot->getData()->get_contestantID());
+    setContestantKeyAfterUnite(curRoot->getRight());
+}
+
+
+void Team::setStrengthKeyAfterUnite(Node<StrengthPairKey, StrengthInfo>* curRoot) {
+    if (curRoot == nullptr) {
+        return;
+    }
+    setStrengthKeyAfterUnite(curRoot->getLeft());
+    StrengthPairKey key = StrengthPairKey(curRoot->getData()->getStrengthFromInfo(), curRoot->getData()->getIdFromInfo());
+    curRoot->setKey(key);
+    setStrengthKeyAfterUnite(curRoot->getRight());
+}
+
+
+void Team::setKeyAfterUnite(){
+    setContestantKeyAfterUnite(m_middleTreeID->getRoot());
+    setContestantKeyAfterUnite(m_leftTreeID->getRoot());
+    setContestantKeyAfterUnite(m_rightTreeID->getRoot());
+    setStrengthKeyAfterUnite(m_leftTreeStrength->getRoot());
+    setStrengthKeyAfterUnite(m_middleTreeStrength->getRoot());
+    setStrengthKeyAfterUnite(m_rightTreeStrength->getRoot());
+
+}

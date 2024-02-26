@@ -332,7 +332,7 @@ void AVLTree<K,D>::convertArrayToTree (Node<K,D>* currRoot, D** data, int* index
         return;
     }
     convertArrayToTree(currRoot->getLeft(), data, index);
-    currRoot->setData(*data +(*index));
+    currRoot->setNewData(data, *index);
     (*index)++;
     convertArrayToTree(currRoot->getRight(), data, index);
 }

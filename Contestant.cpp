@@ -46,17 +46,17 @@ void Contestant::decreaseTeamNumAndArray(int teamID){
     for (i = 0; i < THREE ; ++i) {
         if (m_teamArray[i] == teamID) {
             m_teamArray[i] = -1;
+            m_numOfCurrTeams--;
             break;
         }
     }
-    for ( int j = i+1 ; j < THREE ; j++ )
+    for ( int j = i+1 ; j < THREE && i < THREE ; j++ )
         if (m_teamArray[j] != -1){
             m_teamArray[i]=m_teamArray[j];
             m_teamArray[j] = -1;
             i++;
         }
 
-    m_numOfCurrTeams--;
 }
 
 void mergeContestant(Contestant** a, int na , Contestant** b, int nb , Contestant** c){

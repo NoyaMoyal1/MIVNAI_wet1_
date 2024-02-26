@@ -47,7 +47,9 @@ public:
     void setLeft(Node<K,D>* newLeft);
     void setHeight(int newHeight);
     void setData(D* newData);
+    void setNewData(D** newData, int x);
     int max (int a, int b) const;
+
 };
 
 template <typename K, typename D>
@@ -56,19 +58,23 @@ void Node<K,D>::setKey(K newKey){
 }
 template <typename K, typename D>
 void Node<K,D>::setData(D* newData){
-    this->data = newData;
+    data = newData;
+}
+template <typename K, typename D>
+void Node<K,D>::setNewData(D** newData, int x){
+    data = *(newData+x);
 }
 template <typename K, typename D>
 void Node<K,D>::setHeight(int newHeight){
-    this->height = newHeight;
+    height = newHeight;
 }
 template <typename K, typename D>
 void Node<K,D>::setRight(Node<K,D>* newRight){
-    this->right = newRight;
+    right = newRight;
 }
 template <typename K, typename D>
 void Node<K,D>::setLeft(Node<K,D>* newLeft){
-    this->left = newLeft;
+    left = newLeft;
 }
 template <typename K, typename D>
 int Node<K,D>::max (int a, int b) const{
