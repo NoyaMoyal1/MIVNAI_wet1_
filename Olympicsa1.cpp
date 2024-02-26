@@ -2,10 +2,15 @@
 
 
 
-Olympics::Olympics() : m_TeamTree(new AVLTree<int, Team>()), m_countryTree(new AVLTree<int, Country>()) ,
+Olympics::Olympics() :  m_countryTree(new AVLTree<int, Country>()) ,m_TeamTree(new AVLTree<int, Team>()),
                        m_contestantTree(new AVLTree<int, Contestant>()){}
 
 Olympics::~Olympics(){
+
+    m_TeamTree->deleteAllTreeData(m_TeamTree->getRoot());
+    m_countryTree->deleteAllTreeData(m_countryTree->getRoot());
+    m_contestantTree->deleteAllTreeData(m_contestantTree->getRoot());
+
     delete m_TeamTree;
     delete m_countryTree;
     delete m_contestantTree;
@@ -489,13 +494,13 @@ StatusType Olympics::unite_teams(int teamId1,int teamId2) {
     }
     StrengthInfo** newStrengthArrayMiddle = new StrengthInfo * [newNumOfContestantsMiddle];
     if(newStrengthArrayMiddle == nullptr){
-        delete newStrengthArrayLeft;
+        delete[] newStrengthArrayLeft;
         return StatusType::ALLOCATION_ERROR;
     }
     StrengthInfo** newStrengthArrayRight = new StrengthInfo * [newNumOfContestantsRight];
     if ( newStrengthArrayRight == nullptr){
-        delete newStrengthArrayLeft;
-        delete newStrengthArrayMiddle;
+        delete[] newStrengthArrayLeft;
+        delete[] newStrengthArrayMiddle;
         return StatusType::ALLOCATION_ERROR;
     }
 

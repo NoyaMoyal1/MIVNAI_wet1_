@@ -22,8 +22,7 @@ public:
     Team(int teamID, Country* countryPtr, Sport sport):
             m_teamID(teamID), m_countryPtr(countryPtr) , m_sport(sport),
             m_leftTreeID(nullptr), m_middleTreeID(nullptr), m_rightTreeID(nullptr),
-            m_leftTreeStrength(nullptr), m_middleTreeStrength(nullptr), m_rightTreeStrength(nullptr),
-            m_austerityStrength(0){
+            m_leftTreeStrength(nullptr), m_middleTreeStrength(nullptr), m_rightTreeStrength(nullptr){
         m_leftTreeID = new AVLTree<int,Contestant>();
         m_middleTreeID = new AVLTree<int,Contestant>();
         m_rightTreeID = new AVLTree<int,Contestant>();

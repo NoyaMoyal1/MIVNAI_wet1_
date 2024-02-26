@@ -22,9 +22,9 @@
 #include "AVLTree.h"
 class Olympics {
 private:
-    AVLTree<int,Contestant>* m_contestantTree;
-    AVLTree<int,Country>* m_countryTree;
-    AVLTree<int,Team>* m_TeamTree;
+    AVLTree<int,Country>* m_countryTree ;
+    AVLTree<int,Team>* m_TeamTree ;
+    AVLTree<int,Contestant>* m_contestantTree ;
 
 public:
     // <DO-NOT-MODIFY> {
