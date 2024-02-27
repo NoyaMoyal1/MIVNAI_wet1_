@@ -11,10 +11,6 @@ Olympics::~Olympics(){
     m_countryTree->deleteAllTreeData(m_countryTree->getRoot());
     m_contestantTree->deleteAllTreeData(m_contestantTree->getRoot());
 
-    /*m_TeamTree->deleteAllTreeNodes(m_TeamTree->getRoot());
-    m_countryTree->deleteAllTreeNodes(m_countryTree->getRoot());
-    m_contestantTree->deleteAllTreeNodes(m_contestantTree->getRoot());*/
-
     delete m_countryTree;
     delete m_TeamTree;
     delete m_contestantTree;
@@ -27,22 +23,29 @@ StatusType Olympics::add_country(int countryId, int medals){
     if(m_countryTree->getRoot() != nullptr && m_countryTree->findKey(countryId, m_countryTree->getRoot()) != nullptr){
         return StatusType::FAILURE;
     }
-    Country* newCountry = new Country(countryId,medals);
-    if(newCountry == nullptr){//not sure
+    Country* newCountry;
+    try{
+        newCountry = new Country(countryId,medals);
+    }
+    catch (const std::bad_alloc &e)
+    {
+        return StatusType::ALLOCATION_ERROR;
+    }
+    Node<int,Country>* node;
+    try{
+        node = new Node<int,Country>(countryId);
+    }
+    catch (const std::bad_alloc &e)
+    {
         delete newCountry;
         return StatusType::ALLOCATION_ERROR;
     }
-    Node<int,Country>* node = new Node<int,Country>(countryId);
-    if (node == nullptr){
-        delete newCountry;
-        delete node;
-        return StatusType::ALLOCATION_ERROR;
-    }
+
     node->setData(newCountry);
     m_countryTree->setRoot(m_countryTree->insertNodeToTree(node,m_countryTree->getRoot()));
     return StatusType::SUCCESS;
 }
-//try catch???
+
 StatusType Olympics::remove_country(int countryId){
     if(countryId <= 0){
         return StatusType::INVALID_INPUT;
@@ -72,21 +75,29 @@ StatusType Olympics::add_team(int teamId,int countryId,Sport sport){
         return StatusType::FAILURE;
     }
     Country* curr = m_countryTree->findKey(countryId,m_countryTree->getRoot())->getData();
-    Team* newTeam = new Team(teamId,curr,sport);
-    if(newTeam == nullptr){//not sure
+    Team* newTeam;
+    try{
+        newTeam = new Team(teamId,curr,sport);
+    }
+    catch (const std::bad_alloc &e)
+    {
         return StatusType::ALLOCATION_ERROR;
     }
-    Node<int,Team>* node = new Node<int,Team>(teamId);
-    if (node == nullptr){
+    Node<int,Team>* node;
+    try{
+        node = new Node<int,Team>(teamId);
+    }
+    catch (const std::bad_alloc &e)
+    {
         delete newTeam;
         return StatusType::ALLOCATION_ERROR;
     }
+
     m_countryTree->findKey(countryId,m_countryTree->getRoot())->getData()->addOneTeam();
     node->setData(newTeam);
     m_TeamTree->setRoot(m_TeamTree->insertNodeToTree(node,m_TeamTree->getRoot()));
     return StatusType::SUCCESS;
 }
-
 
 StatusType Olympics::remove_team(int teamId){
     if (teamId <= 0){
@@ -105,7 +116,7 @@ StatusType Olympics::remove_team(int teamId){
 
     return StatusType::SUCCESS;
 }
-//try catchhhhhhh
+
 StatusType Olympics::add_contestant(int contestantId ,int countryId,Sport sport,int strength){
     if (countryId <= 0 || contestantId <= 0 || strength < 0){
         return StatusType::INVALID_INPUT;
@@ -117,21 +128,30 @@ StatusType Olympics::add_contestant(int contestantId ,int countryId,Sport sport,
         return StatusType::FAILURE;
     }
     Country* currCountry = m_countryTree->findKey(countryId,m_countryTree->getRoot())->getData();
-    Contestant* newContestant = new Contestant(contestantId, currCountry, sport,strength);
-    if(newContestant == nullptr){//not sure
+    Contestant* newContestant;
+    try{
+        newContestant = new Contestant(contestantId, currCountry, sport,strength);
+    }
+    catch (const std::bad_alloc &e)
+    {
         return StatusType::ALLOCATION_ERROR;
     }
-    Node<int,Contestant>* node = new Node<int,Contestant>(contestantId);
-    if (node == nullptr){
-        delete currCountry;
+    Node<int,Contestant>* node;
+    try{
+        node = new Node<int,Contestant>(contestantId);
+    }
+    catch (const std::bad_alloc &e)
+    {
+        delete newContestant;
         return StatusType::ALLOCATION_ERROR;
     }
+
     node->setData(newContestant);
     m_contestantTree->setRoot(m_contestantTree->insertNodeToTree(node,m_contestantTree->getRoot()));
     currCountry->addOneContestant();
     return StatusType::SUCCESS;
 }
-//try catch
+
 StatusType Olympics::remove_contestant(int contestantId){
     if (contestantId <= 0){
         return StatusType::INVALID_INPUT;
@@ -175,14 +195,23 @@ StatusType Olympics::add_contestant_to_team(int teamId,int contestantId){
             return StatusType::FAILURE;
         }
     }
-    Node<int,Contestant>* contestantNodeToInsert =  new Node<int,Contestant>(contestantId,contestantNode->getData());
-    if (contestantNodeToInsert == nullptr){
+    Node<int,Contestant>* contestantNodeToInsert;
+    try{
+        contestantNodeToInsert =  new Node<int,Contestant>(contestantId,contestantNode->getData());
+    }
+    catch (const std::bad_alloc &e)
+    {
         return StatusType::ALLOCATION_ERROR;
     }
+
     StrengthPairKey key = StrengthPairKey(contestantNode->getData()->get_strength() ,contestantId);
-    Node<StrengthPairKey,StrengthInfo>* StrengthNodeToInsert =  new Node<StrengthPairKey,StrengthInfo>(key,contestantNodeToInsert->getData()->getStrengthInfo());
-    if (StrengthNodeToInsert == nullptr){
-        delete contestantNodeToInsert;
+    Node<StrengthPairKey,StrengthInfo>* StrengthNodeToInsert;
+    try{
+        StrengthNodeToInsert = new Node<StrengthPairKey,StrengthInfo>(key,contestantNodeToInsert->getData()->getStrengthInfo());
+    }
+    catch (const std::bad_alloc &e)
+    {
+        delete contestantNode;
         return StatusType::ALLOCATION_ERROR;
     }
 
@@ -259,8 +288,15 @@ StatusType Olympics::update_contestant_strength(int contestantId ,int change){
         Node<StrengthPairKey, StrengthInfo> *oldStrengthNodeRight = teamNode->getData()->getRightTreeStrength()->findKey(oldKey,currRootRight);
         Node<StrengthPairKey, StrengthInfo> *oldStrengthNodeMiddle = teamNode->getData()->getMiddleTreeStrength()->findKey(oldKey,currRootMiddle);
 
-        Node<StrengthPairKey, StrengthInfo> *newStrengthNode = new Node<StrengthPairKey, StrengthInfo>(newKey,
-                                                                                                       currContestant->getData()->getStrengthInfo());
+        Node<StrengthPairKey, StrengthInfo> *newStrengthNode;
+        try{
+            newStrengthNode = new Node<StrengthPairKey, StrengthInfo>(newKey, currContestant->getData()->getStrengthInfo());
+        }
+        catch (const std::bad_alloc &e)
+        {
+            return StatusType::ALLOCATION_ERROR;
+        }
+
         //looking for the strength in left tree
         if (oldStrengthNodeLeft != nullptr) {
             teamNode->getData()->getLeftTreeStrength()->setRoot(teamNode->getData()->getLeftTreeStrength()->DeleteNodeFromTree(currRootLeft, oldKey));
@@ -281,9 +317,14 @@ StatusType Olympics::update_contestant_strength(int contestantId ,int change){
         }
         //update team strength
         teamNode->getData()->setTeamStrength(teamNode->getData()->calcStrength());
-        teamNode->getData()->calcAusterity();
+        try{
+            teamNode->getData()->calcAusterity();
+        }
+        catch (const std::bad_alloc &e)
+        {
+            return StatusType::ALLOCATION_ERROR;
+        }
     }
-
     return StatusType::SUCCESS;
 }
 
@@ -337,9 +378,23 @@ StatusType Olympics::unite_teams(int teamId1,int teamId2) {
         return StatusType::FAILURE;
     }
     //creating array and fills them with pointers according to the placement in the avl tree
-    Contestant** contestantArray1 = new Contestant * [team1->getNumOfContestant()];
-    Contestant** contestantArray2 = new Contestant * [team2->getNumOfContestant()];
-
+    Contestant** contestantArray1;
+    Contestant** contestantArray2;
+    try{
+        contestantArray1 = new Contestant * [team1->getNumOfContestant()];
+    }
+    catch (const std::bad_alloc &e)
+    {
+        return StatusType::ALLOCATION_ERROR;
+    }
+    try{
+        contestantArray2 = new Contestant * [team2->getNumOfContestant()];
+    }
+    catch (const std::bad_alloc &e)
+    {
+        delete[] contestantArray1;
+        return StatusType::ALLOCATION_ERROR;
+    }
 
     int index1 = 0;
     team1->getLeftTreeID()->convertTreeToArray(team1->getLeftTreeID()->getRoot(),contestantArray1, &index1);
@@ -351,13 +406,82 @@ StatusType Olympics::unite_teams(int teamId1,int teamId2) {
     team2->getMiddleTreeID()->convertTreeToArray(team2->getMiddleTreeID()->getRoot(),contestantArray2, &index2);
     team2->getRightTreeID()->convertTreeToArray(team2->getRightTreeID()->getRoot(),contestantArray2, &index2);
 
+    StrengthInfo** strengthArrayLeft1;
+    StrengthInfo** strengthArrayLeft2;
+    StrengthInfo** strengthArrayMiddle1;
+    StrengthInfo** strengthArrayMiddle2;
+    StrengthInfo** strengthArrayRight1;
+    StrengthInfo** strengthArrayRight2;
 
-    StrengthInfo** strengthArrayLeft1 = new StrengthInfo * [team1->getLeftTreeStrength()->getNodeCount()];
-    StrengthInfo** strengthArrayLeft2 = new StrengthInfo * [team2->getLeftTreeStrength()->getNodeCount()];
-    StrengthInfo** strengthArrayMiddle1 = new StrengthInfo * [team1->getMiddleTreeStrength()->getNodeCount()];
-    StrengthInfo** strengthArrayMiddle2 = new StrengthInfo * [team2->getMiddleTreeStrength()->getNodeCount()];
-    StrengthInfo** strengthArrayRight1 = new StrengthInfo * [team1->getRightTreeStrength()->getNodeCount()];
-    StrengthInfo** strengthArrayRight2 = new StrengthInfo * [team2->getRightTreeStrength()->getNodeCount()];
+    try{
+        strengthArrayLeft1 = new StrengthInfo * [team1->getLeftTreeStrength()->getNodeCount()];
+    }
+    catch (const std::bad_alloc &e)
+    {
+        delete[] contestantArray2;
+        delete[] contestantArray1;
+        return StatusType::ALLOCATION_ERROR;
+    }
+    try{
+        strengthArrayLeft2 = new StrengthInfo * [team2->getLeftTreeStrength()->getNodeCount()];
+    }
+    catch (const std::bad_alloc &e)
+    {
+        delete[] strengthArrayLeft1;
+        delete[] contestantArray2;
+        delete[] contestantArray1;
+        return StatusType::ALLOCATION_ERROR;
+    }
+    try{
+        strengthArrayMiddle1 = new StrengthInfo * [team1->getMiddleTreeStrength()->getNodeCount()];
+    }
+    catch (const std::bad_alloc &e)
+    {
+        delete[] strengthArrayLeft2;
+        delete[] strengthArrayLeft1;
+        delete[] contestantArray2;
+        delete[] contestantArray1;
+        return StatusType::ALLOCATION_ERROR;
+    }
+    try{
+        strengthArrayMiddle2 = new StrengthInfo * [team2->getMiddleTreeStrength()->getNodeCount()];
+    }
+    catch (const std::bad_alloc &e)
+    {
+        delete[] strengthArrayMiddle1;
+        delete[] strengthArrayLeft2;
+        delete[] strengthArrayLeft1;
+        delete[] contestantArray2;
+        delete[] contestantArray1;
+        return StatusType::ALLOCATION_ERROR;
+    }
+    try{
+        strengthArrayRight1 = new StrengthInfo * [team1->getRightTreeStrength()->getNodeCount()];
+    }
+    catch (const std::bad_alloc &e)
+    {
+        delete[] strengthArrayMiddle2;
+        delete[] strengthArrayMiddle1;
+        delete[] strengthArrayLeft2;
+        delete[] strengthArrayLeft1;
+        delete[] contestantArray2;
+        delete[] contestantArray1;
+        return StatusType::ALLOCATION_ERROR;
+    }
+    try{
+        strengthArrayRight2 = new StrengthInfo * [team2->getRightTreeStrength()->getNodeCount()];
+    }
+    catch (const std::bad_alloc &e)
+    {
+        delete[] strengthArrayRight1;
+        delete[] strengthArrayMiddle2;
+        delete[] strengthArrayMiddle1;
+        delete[] strengthArrayLeft2;
+        delete[] strengthArrayLeft1;
+        delete[] contestantArray2;
+        delete[] contestantArray1;
+        return StatusType::ALLOCATION_ERROR;
+    }
 
     int index=0;
     team1->getLeftTreeStrength()->convertTreeToArray(team1->getLeftTreeStrength()->getRoot(), strengthArrayLeft1,&index);
@@ -373,18 +497,96 @@ StatusType Olympics::unite_teams(int teamId1,int teamId2) {
     team2->getRightTreeStrength()->convertTreeToArray(team2->getRightTreeStrength()->getRoot(), strengthArrayRight2,&index);
     index = 0;
 
-    StrengthInfo** strengthArrayLeftMiddle1 = new StrengthInfo * [team1->getLeftTreeStrength()->getNodeCount()
-                                                                  +team1->getMiddleTreeStrength()->getNodeCount()];
-    StrengthInfo** strengthArray1 = new StrengthInfo * [team1->getNumOfContestant()];
-
-
-    StrengthInfo** strengthArrayLeftMiddle2 = new StrengthInfo * [team2->getLeftTreeStrength()->getNodeCount()
-                                                                  +team2->getMiddleTreeStrength()->getNodeCount()];
-    StrengthInfo** strengthArray2 = new StrengthInfo * [team2->getNumOfContestant()];
-
-
-    StrengthInfo** strengthArrayUniteRep = new StrengthInfo * [team1->getNumOfContestant()+team2->getNumOfContestant()];
-
+    StrengthInfo** strengthArrayLeftMiddle1;
+    StrengthInfo** strengthArray1;
+    StrengthInfo** strengthArrayLeftMiddle2;
+    StrengthInfo** strengthArray2;
+    StrengthInfo** strengthArrayUniteRep;
+    try{
+        strengthArrayLeftMiddle1 = new StrengthInfo * [team1->getLeftTreeStrength()->getNodeCount()+team1->getMiddleTreeStrength()->getNodeCount()];
+    }
+    catch (const std::bad_alloc &e)
+    {
+        delete[] strengthArrayRight2;
+        delete[] strengthArrayRight1;
+        delete[] strengthArrayMiddle2;
+        delete[] strengthArrayMiddle1;
+        delete[] strengthArrayLeft2;
+        delete[] strengthArrayLeft1;
+        delete[] contestantArray2;
+        delete[] contestantArray1;
+        return StatusType::ALLOCATION_ERROR;
+    }
+    try{
+        strengthArray1 = new StrengthInfo * [team1->getNumOfContestant()];
+    }
+    catch (const std::bad_alloc &e)
+    {
+        delete[] strengthArrayLeftMiddle1;
+        delete[] strengthArrayRight2;
+        delete[] strengthArrayRight1;
+        delete[] strengthArrayMiddle2;
+        delete[] strengthArrayMiddle1;
+        delete[] strengthArrayLeft2;
+        delete[] strengthArrayLeft1;
+        delete[] contestantArray2;
+        delete[] contestantArray1;
+        return StatusType::ALLOCATION_ERROR;
+    }
+    try{
+        strengthArrayLeftMiddle2 = new StrengthInfo * [team2->getLeftTreeStrength()->getNodeCount()+team2->getMiddleTreeStrength()->getNodeCount()];
+    }
+    catch (const std::bad_alloc &e)
+    {
+        delete[] strengthArray1;
+        delete[] strengthArrayLeftMiddle1;
+        delete[] strengthArrayRight2;
+        delete[] strengthArrayRight1;
+        delete[] strengthArrayMiddle2;
+        delete[] strengthArrayMiddle1;
+        delete[] strengthArrayLeft2;
+        delete[] strengthArrayLeft1;
+        delete[] contestantArray2;
+        delete[] contestantArray1;
+        return StatusType::ALLOCATION_ERROR;
+    }
+    try{
+        strengthArray2 = new StrengthInfo * [team2->getNumOfContestant()];
+    }
+    catch (const std::bad_alloc &e)
+    {
+        delete[] strengthArrayLeftMiddle2;
+        delete[] strengthArray1;
+        delete[] strengthArrayLeftMiddle1;
+        delete[] strengthArrayRight2;
+        delete[] strengthArrayRight1;
+        delete[] strengthArrayMiddle2;
+        delete[] strengthArrayMiddle1;
+        delete[] strengthArrayLeft2;
+        delete[] strengthArrayLeft1;
+        delete[] contestantArray2;
+        delete[] contestantArray1;
+        return StatusType::ALLOCATION_ERROR;
+    }
+    try{
+        strengthArrayUniteRep = new StrengthInfo * [team1->getNumOfContestant()+team2->getNumOfContestant()];
+    }
+    catch (const std::bad_alloc &e)
+    {
+        delete[] strengthArray2;
+        delete[] strengthArrayLeftMiddle2;
+        delete[] strengthArray1;
+        delete[] strengthArrayLeftMiddle1;
+        delete[] strengthArrayRight2;
+        delete[] strengthArrayRight1;
+        delete[] strengthArrayMiddle2;
+        delete[] strengthArrayMiddle1;
+        delete[] strengthArrayLeft2;
+        delete[] strengthArrayLeft1;
+        delete[] contestantArray2;
+        delete[] contestantArray1;
+        return StatusType::ALLOCATION_ERROR;
+    }
 
     mergeStrength(strengthArrayLeft1, team1->getLeftTreeStrength()->getNodeCount(), strengthArrayMiddle1,
                   team1->getMiddleTreeStrength()->getNodeCount(),strengthArrayLeftMiddle1);
@@ -398,7 +600,6 @@ StatusType Olympics::unite_teams(int teamId1,int teamId2) {
 
     mergeStrength(strengthArrayLeftMiddle2,team2->getLeftTreeStrength()->getNodeCount() +team2->getMiddleTreeStrength()->getNodeCount(),
                   strengthArrayRight2, team2->getRightTreeStrength()->getNodeCount(), strengthArray2);
-
 
 
     mergeStrength(strengthArray1, team1->getNumOfContestant(), strengthArray2, team2->getNumOfContestant()
@@ -416,8 +617,23 @@ StatusType Olympics::unite_teams(int teamId1,int teamId2) {
     delete[] strengthArrayLeftMiddle2;
     delete[] strengthArray2;
 
+    Contestant** contestantArrayUniteRep;
+    try{
+        contestantArrayUniteRep = new Contestant * [team1->getNumOfContestant()+team2->getNumOfContestant()];
+    }
+    catch (const std::bad_alloc &e)
+    {
+        delete[] strengthArrayUniteRep;
+        delete[] strengthArray2;
+        delete[] strengthArrayLeftMiddle2;
+        delete[] strengthArrayRight2;
+        delete[] strengthArrayMiddle2;
+        delete[] strengthArrayLeft2;
+        delete[] contestantArray2;
+        delete[] contestantArray1;
+        return StatusType::ALLOCATION_ERROR;
+    }
 
-    Contestant** contestantArrayUniteRep = new Contestant * [team1->getNumOfContestant()+team2->getNumOfContestant()];
     mergeContestant(contestantArray1,team1->getNumOfContestant(),contestantArray2,team2->getNumOfContestant(),contestantArrayUniteRep  );
 
     for ( int i = 0 ; i < team2->getNumOfContestant() ; i++) {
@@ -438,7 +654,22 @@ StatusType Olympics::unite_teams(int teamId1,int teamId2) {
         }
     }
     int newNumOfContestants = team1->getNumOfContestant()+team2->getNumOfContestant() - countRep;
-    Contestant** contestantArrayUniteNoRep = new Contestant * [newNumOfContestants];
+    Contestant** contestantArrayUniteNoRep;
+    try{
+        contestantArrayUniteNoRep = new Contestant * [newNumOfContestants];
+    }
+    catch (const std::bad_alloc &e)
+    {
+        delete[] contestantArrayUniteRep;
+        delete[] strengthArrayUniteRep;
+        delete[] strengthArray2;
+        delete[] strengthArrayLeftMiddle2;
+        delete[] strengthArrayRight2;
+        delete[] strengthArrayMiddle2;
+        delete[] strengthArrayLeft2;
+        return StatusType::ALLOCATION_ERROR;
+    }
+
     for (int j=0, i = 0 ; i <team1->getNumOfContestant()+team2->getNumOfContestant() ; ++i) {
         if (contestantArrayUniteRep[i]!= nullptr) {
             contestantArrayUniteNoRep[j] = contestantArrayUniteRep[i];
@@ -453,10 +684,23 @@ StatusType Olympics::unite_teams(int teamId1,int teamId2) {
             i++;
         }
     }
-    StrengthInfo** strengthArrayUniteNoRep = new StrengthInfo * [newNumOfContestants];
-    if(strengthArrayUniteNoRep == nullptr){
+    StrengthInfo** strengthArrayUniteNoRep;
+    try{
+        strengthArrayUniteNoRep = new StrengthInfo * [newNumOfContestants];
+    }
+    catch (const std::bad_alloc &e)
+    {
+        delete[] contestantArrayUniteNoRep;
+        delete[] contestantArrayUniteRep;
+        delete[] strengthArrayUniteRep;
+        delete[] strengthArray2;
+        delete[] strengthArrayLeftMiddle2;
+        delete[] strengthArrayRight2;
+        delete[] strengthArrayMiddle2;
+        delete[] strengthArrayLeft2;
         return StatusType::ALLOCATION_ERROR;
     }
+
     for (int j=0, i = 0 ; i <team1->getNumOfContestant()+team2->getNumOfContestant() ; ++i) {
         if (strengthArrayUniteRep[i]!= nullptr) {
             strengthArrayUniteNoRep[j] = strengthArrayUniteRep[i];
@@ -465,7 +709,7 @@ StatusType Olympics::unite_teams(int teamId1,int teamId2) {
     }
     delete[] contestantArrayUniteRep;
 
-    int newNumOfContestantsLeft =0,  newNumOfContestantsMiddle = 0, newNumOfContestantsRight = 0 ;;
+    int newNumOfContestantsLeft = 0,  newNumOfContestantsMiddle = 0, newNumOfContestantsRight = 0 ;
 
     if (newNumOfContestants%THREE == 0 ) {
         newNumOfContestantsLeft = newNumOfContestants/THREE;
@@ -494,19 +738,57 @@ StatusType Olympics::unite_teams(int teamId1,int teamId2) {
         contestantArrayUniteNoRep[i]->getStrengthInfo()->setTree('R');
     }
 
-    StrengthInfo** newStrengthArrayLeft = new StrengthInfo * [newNumOfContestantsLeft];
-    if (newStrengthArrayLeft == nullptr){
+    StrengthInfo** newStrengthArrayLeft;
+    try{
+        newStrengthArrayLeft = new StrengthInfo * [newNumOfContestantsLeft];
+    }
+    catch (const std::bad_alloc &e)
+    {
+        delete[] strengthArrayUniteNoRep;
+        delete[] contestantArrayUniteNoRep;
+        delete[] strengthArrayUniteRep;
+        delete[] strengthArray2;
+        delete[] strengthArrayLeftMiddle2;
+        delete[] strengthArrayRight2;
+        delete[] strengthArrayMiddle2;
+        delete[] strengthArrayLeft2;
         return StatusType::ALLOCATION_ERROR;
     }
-    StrengthInfo** newStrengthArrayMiddle = new StrengthInfo * [newNumOfContestantsMiddle];
-    if(newStrengthArrayMiddle == nullptr){
+
+    StrengthInfo** newStrengthArrayMiddle;
+    try{
+        newStrengthArrayMiddle = new StrengthInfo * [newNumOfContestantsMiddle];
+    }
+    catch (const std::bad_alloc &e)
+    {
         delete[] newStrengthArrayLeft;
+        delete[] strengthArrayUniteNoRep;
+        delete[] contestantArrayUniteNoRep;
+        delete[] strengthArrayUniteRep;
+        delete[] strengthArray2;
+        delete[] strengthArrayLeftMiddle2;
+        delete[] strengthArrayRight2;
+        delete[] strengthArrayMiddle2;
+        delete[] strengthArrayLeft2;
         return StatusType::ALLOCATION_ERROR;
     }
-    StrengthInfo** newStrengthArrayRight = new StrengthInfo * [newNumOfContestantsRight];
-    if ( newStrengthArrayRight == nullptr){
-        delete[] newStrengthArrayLeft;
+
+    StrengthInfo** newStrengthArrayRight;
+    try{
+        newStrengthArrayRight = new StrengthInfo * [newNumOfContestantsRight];
+    }
+    catch (const std::bad_alloc &e)
+    {
         delete[] newStrengthArrayMiddle;
+        delete[] newStrengthArrayLeft;
+        delete[] strengthArrayUniteNoRep;
+        delete[] contestantArrayUniteNoRep;
+        delete[] strengthArrayUniteRep;
+        delete[] strengthArray2;
+        delete[] strengthArrayLeftMiddle2;
+        delete[] strengthArrayRight2;
+        delete[] strengthArrayMiddle2;
+        delete[] strengthArrayLeft2;
         return StatusType::ALLOCATION_ERROR;
     }
 
@@ -538,30 +820,131 @@ StatusType Olympics::unite_teams(int teamId1,int teamId2) {
 
     StrengthPairKey nullKey = StrengthPairKey(-1, -1);
 
-    AVLTree<StrengthPairKey, StrengthInfo>* newLeftTreeStrength = new AVLTree<StrengthPairKey, StrengthInfo>();
-    if (newLeftTreeStrength == nullptr){
+    AVLTree<StrengthPairKey, StrengthInfo>* newLeftTreeStrength;
+    try{
+        newLeftTreeStrength = new AVLTree<StrengthPairKey, StrengthInfo>();
+    }
+    catch (const std::bad_alloc &e)
+    {
+        delete[] newStrengthArrayRight;
+        delete[] newStrengthArrayMiddle;
+        delete[] newStrengthArrayLeft;
+        delete[] contestantArrayUniteNoRep;
+        delete[] strengthArrayUniteRep;
+        delete[] strengthArray2;
+        delete[] strengthArrayLeftMiddle2;
+        delete[] strengthArrayRight2;
+        delete[] strengthArrayMiddle2;
+        delete[] strengthArrayLeft2;
         return StatusType::ALLOCATION_ERROR;
     }
-    newLeftTreeStrength->buildTreeBeforeInsertArray(newNumOfContestantsLeft, nullKey);
+    try{
+        newLeftTreeStrength->buildTreeBeforeInsertArray(newNumOfContestantsLeft, nullKey);
+    }
+    catch (const std::bad_alloc &e)
+    {
+        delete newLeftTreeStrength;
+        delete[] newStrengthArrayRight;
+        delete[] newStrengthArrayMiddle;
+        delete[] newStrengthArrayLeft;
+        delete[] contestantArrayUniteNoRep;
+        delete[] strengthArrayUniteRep;
+        delete[] strengthArray2;
+        delete[] strengthArrayLeftMiddle2;
+        delete[] strengthArrayRight2;
+        delete[] strengthArrayMiddle2;
+        delete[] strengthArrayLeft2;
+        return StatusType::ALLOCATION_ERROR;
+    }
     team1->setLeftTreeStrength(newLeftTreeStrength);
 
-    AVLTree<StrengthPairKey, StrengthInfo>* newMiddleTreeStrength = new AVLTree<StrengthPairKey, StrengthInfo>();
-    if(newMiddleTreeStrength == nullptr){
+    AVLTree<StrengthPairKey, StrengthInfo>* newMiddleTreeStrength;
+    try{
+        newMiddleTreeStrength = new AVLTree<StrengthPairKey, StrengthInfo>();
+    }
+    catch (const std::bad_alloc &e)
+    {
         delete newLeftTreeStrength;
+        delete newLeftTreeStrength;
+        delete[] newStrengthArrayRight;
+        delete[] newStrengthArrayMiddle;
+        delete[] newStrengthArrayLeft;
+        delete[] contestantArrayUniteNoRep;
+        delete[] strengthArrayUniteRep;
+        delete[] strengthArray2;
+        delete[] strengthArrayLeftMiddle2;
+        delete[] strengthArrayRight2;
+        delete[] strengthArrayMiddle2;
+        delete[] strengthArrayLeft2;
         return StatusType::ALLOCATION_ERROR;
     }
-    newMiddleTreeStrength->buildTreeBeforeInsertArray(newNumOfContestantsMiddle, nullKey);
+    try{
+        newMiddleTreeStrength->buildTreeBeforeInsertArray(newNumOfContestantsMiddle, nullKey);
+    }
+    catch (const std::bad_alloc &e)
+    {
+        delete newMiddleTreeStrength;
+        delete newLeftTreeStrength;
+        delete newLeftTreeStrength;
+        delete[] newStrengthArrayRight;
+        delete[] newStrengthArrayMiddle;
+        delete[] newStrengthArrayLeft;
+        delete[] contestantArrayUniteNoRep;
+        delete[] strengthArrayUniteRep;
+        delete[] strengthArray2;
+        delete[] strengthArrayLeftMiddle2;
+        delete[] strengthArrayRight2;
+        delete[] strengthArrayMiddle2;
+        delete[] strengthArrayLeft2;
+        return StatusType::ALLOCATION_ERROR;
+    }
     team1->setMiddleTreeStrength(newMiddleTreeStrength);
 
-    AVLTree<StrengthPairKey, StrengthInfo>* newRightTreeStrength = new AVLTree<StrengthPairKey, StrengthInfo>();
-    if (newRightTreeStrength == nullptr){
-        delete newLeftTreeStrength;
+    AVLTree<StrengthPairKey, StrengthInfo>* newRightTreeStrength;
+    try{
+        newRightTreeStrength = new AVLTree<StrengthPairKey, StrengthInfo>();
+    }
+    catch (const std::bad_alloc &e)
+    {
         delete newMiddleTreeStrength;
+        delete newMiddleTreeStrength;
+        delete newLeftTreeStrength;
+        delete newLeftTreeStrength;
+        delete[] newStrengthArrayRight;
+        delete[] newStrengthArrayMiddle;
+        delete[] newStrengthArrayLeft;
+        delete[] contestantArrayUniteNoRep;
+        delete[] strengthArrayUniteRep;
+        delete[] strengthArray2;
+        delete[] strengthArrayLeftMiddle2;
+        delete[] strengthArrayRight2;
+        delete[] strengthArrayMiddle2;
+        delete[] strengthArrayLeft2;
         return StatusType::ALLOCATION_ERROR;
     }
-    newRightTreeStrength->buildTreeBeforeInsertArray(newNumOfContestantsRight, nullKey);
+    try{
+        newRightTreeStrength->buildTreeBeforeInsertArray(newNumOfContestantsRight, nullKey);
+    }
+    catch (const std::bad_alloc &e)
+    {
+        delete newRightTreeStrength;
+        delete newMiddleTreeStrength;
+        delete newMiddleTreeStrength;
+        delete newLeftTreeStrength;
+        delete newLeftTreeStrength;
+        delete[] newStrengthArrayRight;
+        delete[] newStrengthArrayMiddle;
+        delete[] newStrengthArrayLeft;
+        delete[] contestantArrayUniteNoRep;
+        delete[] strengthArrayUniteRep;
+        delete[] strengthArray2;
+        delete[] strengthArrayLeftMiddle2;
+        delete[] strengthArrayRight2;
+        delete[] strengthArrayMiddle2;
+        delete[] strengthArrayLeft2;
+        return StatusType::ALLOCATION_ERROR;
+    }
     team1->setRightTreeStrength(newRightTreeStrength);
-
     int il =0 , im = 0 , ir = 0;
     team1->getLeftTreeStrength()->convertArrayToTree(team1->getLeftTreeStrength()->getRoot(),newStrengthArrayLeft, &il);
     team1->getMiddleTreeStrength()->convertArrayToTree(team1->getMiddleTreeStrength()->getRoot(),newStrengthArrayMiddle, &im);
@@ -583,38 +966,139 @@ StatusType Olympics::unite_teams(int teamId1,int teamId2) {
     delete team1->getRightTreeID();
     team1->setRightTreeID(nullptr);
 
-
-    AVLTree<int, Contestant>* newLeftTreeID = new AVLTree<int, Contestant>();
-    if (newLeftTreeID == nullptr){
-        delete newLeftTreeStrength;
-        delete newMiddleTreeStrength;
+    AVLTree<int, Contestant>* newLeftTreeID;
+    try{
+        newLeftTreeID = new AVLTree<int, Contestant>();
+    }
+    catch (const std::bad_alloc &e)
+    {
         delete newRightTreeStrength;
+        delete newMiddleTreeStrength;
+        delete newMiddleTreeStrength;
+        delete newLeftTreeStrength;
+        delete newLeftTreeStrength;
+        delete[] contestantArrayUniteNoRep;
+        delete[] strengthArrayUniteRep;
+        delete[] strengthArray2;
+        delete[] strengthArrayLeftMiddle2;
+        delete[] strengthArrayRight2;
+        delete[] strengthArrayMiddle2;
+        delete[] strengthArrayLeft2;
         return StatusType::ALLOCATION_ERROR;
     }
-    newLeftTreeID->buildTreeBeforeInsertArray(newNumOfContestantsLeft, -1);
+
+    try{
+        newLeftTreeID->buildTreeBeforeInsertArray(newNumOfContestantsLeft, -1);
+    }
+    catch (const std::bad_alloc &e)
+    {
+        delete newLeftTreeID;
+        delete newRightTreeStrength;
+        delete newMiddleTreeStrength;
+        delete newMiddleTreeStrength;
+        delete newLeftTreeStrength;
+        delete newLeftTreeStrength;
+        delete[] contestantArrayUniteNoRep;
+        delete[] strengthArrayUniteRep;
+        delete[] strengthArray2;
+        delete[] strengthArrayLeftMiddle2;
+        delete[] strengthArrayRight2;
+        delete[] strengthArrayMiddle2;
+        delete[] strengthArrayLeft2;
+        return StatusType::ALLOCATION_ERROR;
+    }
+
     team1->setLeftTreeID(newLeftTreeID);
 
-    AVLTree<int, Contestant>* newMiddleTreeID = new AVLTree<int, Contestant>();
-    if(newMiddleTreeID == nullptr){
-        delete newLeftTreeStrength;
-        delete newMiddleTreeStrength;
-        delete newRightTreeStrength;
+    AVLTree<int, Contestant>* newMiddleTreeID;
+    try{
+        newMiddleTreeID = new AVLTree<int, Contestant>();
+    }
+    catch (const std::bad_alloc &e)
+    {
         delete newLeftTreeID;
+        delete newRightTreeStrength;
+        delete newMiddleTreeStrength;
+        delete newMiddleTreeStrength;
+        delete newLeftTreeStrength;
+        delete newLeftTreeStrength;
+        delete[] contestantArrayUniteNoRep;
+        delete[] strengthArrayUniteRep;
+        delete[] strengthArray2;
+        delete[] strengthArrayLeftMiddle2;
+        delete[] strengthArrayRight2;
+        delete[] strengthArrayMiddle2;
+        delete[] strengthArrayLeft2;
         return StatusType::ALLOCATION_ERROR;
     }
-    newMiddleTreeID->buildTreeBeforeInsertArray(newNumOfContestantsMiddle, -1);
+    try{
+        newMiddleTreeID->buildTreeBeforeInsertArray(newNumOfContestantsMiddle, -1);
+    }
+    catch (const std::bad_alloc &e)
+    {
+        delete newMiddleTreeID;
+        delete newLeftTreeID;
+        delete newRightTreeStrength;
+        delete newMiddleTreeStrength;
+        delete newMiddleTreeStrength;
+        delete newLeftTreeStrength;
+        delete newLeftTreeStrength;
+        delete[] contestantArrayUniteNoRep;
+        delete[] strengthArrayUniteRep;
+        delete[] strengthArray2;
+        delete[] strengthArrayLeftMiddle2;
+        delete[] strengthArrayRight2;
+        delete[] strengthArrayMiddle2;
+        delete[] strengthArrayLeft2;
+        return StatusType::ALLOCATION_ERROR;
+    }
+
     team1->setMiddleTreeID(newMiddleTreeID);
 
-    AVLTree<int, Contestant>* newRightTreeID = new AVLTree<int, Contestant>();
-    if (newRightTreeID== nullptr){
-        delete newLeftTreeStrength;
-        delete newMiddleTreeStrength;
-        delete newRightTreeStrength;
-        delete newLeftTreeID;
+    AVLTree<int, Contestant>* newRightTreeID;
+    try{
+        newRightTreeID = new AVLTree<int, Contestant>();
+    }
+    catch (const std::bad_alloc &e)
+    {
         delete newMiddleTreeID;
+        delete newLeftTreeID;
+        delete newRightTreeStrength;
+        delete newMiddleTreeStrength;
+        delete newMiddleTreeStrength;
+        delete newLeftTreeStrength;
+        delete newLeftTreeStrength;
+        delete[] contestantArrayUniteNoRep;
+        delete[] strengthArrayUniteRep;
+        delete[] strengthArray2;
+        delete[] strengthArrayLeftMiddle2;
+        delete[] strengthArrayRight2;
+        delete[] strengthArrayMiddle2;
+        delete[] strengthArrayLeft2;
         return StatusType::ALLOCATION_ERROR;
     }
-    newRightTreeID->buildTreeBeforeInsertArray(newNumOfContestantsRight, -1);
+    try{
+        newRightTreeID->buildTreeBeforeInsertArray(newNumOfContestantsRight, -1);
+    }
+    catch (const std::bad_alloc &e)
+    {
+        delete newRightTreeID;
+        delete newMiddleTreeID;
+        delete newLeftTreeID;
+        delete newRightTreeStrength;
+        delete newMiddleTreeStrength;
+        delete newMiddleTreeStrength;
+        delete newLeftTreeStrength;
+        delete newLeftTreeStrength;
+        delete[] contestantArrayUniteNoRep;
+        delete[] strengthArrayUniteRep;
+        delete[] strengthArray2;
+        delete[] strengthArrayLeftMiddle2;
+        delete[] strengthArrayRight2;
+        delete[] strengthArrayMiddle2;
+        delete[] strengthArrayLeft2;
+        return StatusType::ALLOCATION_ERROR;
+    }
     team1->setRightTreeID(newRightTreeID);
 
     int indexID=0;
