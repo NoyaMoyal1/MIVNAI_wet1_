@@ -11,9 +11,9 @@ Olympics::~Olympics(){
     m_countryTree->deleteAllTreeData(m_countryTree->getRoot());
     m_contestantTree->deleteAllTreeData(m_contestantTree->getRoot());
 
-    delete m_TeamTree;
     delete m_countryTree;
     delete m_contestantTree;
+    delete m_TeamTree;
 }
 //all done except from try catch
 StatusType Olympics::add_country(int countryId, int medals){
@@ -48,7 +48,7 @@ StatusType Olympics::remove_country(int countryId){
        || (m_countryTree->findKey(countryId,m_countryTree->getRoot())->getData()->get_numsTeam() != 0)){
         return StatusType::FAILURE;
     }
-    delete m_countryTree->findKey(countryId,m_countryTree->getRoot())->getData();
+    delete (m_countryTree->findKey(countryId,m_countryTree->getRoot()))->getData();
     m_countryTree->findKey(countryId,m_countryTree->getRoot())->setData(nullptr);
     m_countryTree->setRoot(m_countryTree->DeleteNodeFromTree(m_countryTree->getRoot(),countryId));
 
