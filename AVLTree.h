@@ -15,8 +15,9 @@ public:
 
     //destructor - when removing template class , first destruct the template and then the node
     virtual~ AVLTree(){
-      //  deleteAllTreeData(m_root);
-        delete m_root;
+        //delete m_root;
+        deleteAllTreeNodes(m_root);
+        m_root = nullptr;
     }
 
     Node<K,D>* rightRotation(Node<K,D>* node);
@@ -46,9 +47,24 @@ public:
     void buildTreeBeforeInsertArray(int sizeOfArray, K nullKey);
 
     void deleteAllTreeData(Node<K,D>* m_root);
+    void deleteAllTreeNodes(Node<K,D>* m_root);
 
 
-    };
+};
+
+template <typename K, typename D>
+void AVLTree<K,D>::deleteAllTreeNodes(Node<K,D>* root){
+    if (root == nullptr){
+        return;
+    }
+    deleteAllTreeNodes(root->getLeft());
+    deleteAllTreeNodes(root->getRight());
+    root->setLeft(nullptr);
+    root->setRight(nullptr);
+    delete root;
+}
+
+
 template <typename K, typename D>
 Node<K,D>* AVLTree<K,D>::getRoot(){
     return m_root;
@@ -137,13 +153,13 @@ Node<K,D>* AVLTree<K,D>::DeleteNodeFromTree(Node<K,D>* currRoot, K key) {
 
         }
         else if (currRoot->getLeft() == nullptr) {// have one child
-            Node<K,D>* temp = new Node<K,D>(currRoot->getRight());
+            Node<K,D>* temp = currRoot->getRight();
             m_nodeCount--;
             delete currRoot;
             return temp;
         }
         else if (currRoot->getRight() == nullptr) {// have one child
-            Node<K,D>* temp = new Node<K,D>(currRoot->getLeft());
+            Node<K,D>* temp = currRoot->getLeft();
             m_nodeCount--;
             delete currRoot;
             return temp;
@@ -315,7 +331,7 @@ void AVLTree<K,D>::buildTreeBeforeInsertArray(int sizeOfArray, K nullKey){
     m_nodeCount = sizeOfTree;
     changeTreeFromFull(sizeOfArray);
 }
-/*
+
 template <typename K, typename D>
 void AVLTree<K,D>::deleteAllTreeData(Node<K,D>* root){
     if (root == nullptr){
@@ -323,9 +339,11 @@ void AVLTree<K,D>::deleteAllTreeData(Node<K,D>* root){
     }
     deleteAllTreeData(root->getLeft());
     delete root->getData();
+
+    root->setData(nullptr);
     deleteAllTreeData(root->getRight());
 }
-*/
+
 template<typename K, typename D>
 void AVLTree<K,D>::convertArrayToTree (Node<K,D>* currRoot, D** data, int* index){
     if(currRoot == nullptr){

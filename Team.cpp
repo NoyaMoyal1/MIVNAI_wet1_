@@ -1,9 +1,9 @@
 #include "Team.h"
 int Team::getNumOfContestant (){
-return m_numOfContestant;
+    return m_numOfContestant;
 }
 void Team::setNumOfContestant (int num){
-     m_numOfContestant = num;
+    m_numOfContestant = num;
 }
 
 int Team::getTeamStrength (){
@@ -84,7 +84,7 @@ void Team::addContestantToChosenTeam(Node<int,Contestant>* nodeToAdd,Node<Streng
         m_leftTreeID->setRoot(m_leftTreeID->insertNodeToTree( nodeToAdd, m_leftTreeID->getRoot()));
         m_leftTreeStrength->setRoot(m_leftTreeStrength->insertNodeToTree(strengthNode, m_leftTreeStrength->getRoot()));
     }
-    //belong to the right tree
+        //belong to the right tree
 
     else if (m_rightTreeID->getRoot() != nullptr && nodeToAdd->getKey() > m_rightTreeID->getMinOfTree()->getKey()){
         m_rightTreeID->setRoot( m_rightTreeID->insertNodeToTree(nodeToAdd, m_rightTreeID->getRoot()));
@@ -92,19 +92,19 @@ void Team::addContestantToChosenTeam(Node<int,Contestant>* nodeToAdd,Node<Streng
         strengthNode->getData()->setTree('R');
     }
 
-    //belong to the left tree
+        //belong to the left tree
     else if (m_leftTreeID->getRoot() != nullptr && nodeToAdd->getKey() <  m_leftTreeID->getMaxOfTree()->getKey()) {
         m_leftTreeID->setRoot(m_leftTreeID->insertNodeToTree(nodeToAdd, m_leftTreeID->getRoot()));
         m_leftTreeStrength->setRoot(m_leftTreeStrength->insertNodeToTree(strengthNode, m_leftTreeStrength->getRoot()));
         strengthNode->getData()->setTree('L');
     }
-    //belong to middle tree
+        //belong to middle tree
     else {
-            // Node belongs to the middle tree
-            m_middleTreeID->setRoot(m_middleTreeID->insertNodeToTree(nodeToAdd, m_middleTreeID->getRoot()));
-            m_middleTreeStrength->setRoot(m_middleTreeStrength->insertNodeToTree(strengthNode, m_middleTreeStrength->getRoot()));
-            strengthNode->getData()->setTree('M');
-        }
+        // Node belongs to the middle tree
+        m_middleTreeID->setRoot(m_middleTreeID->insertNodeToTree(nodeToAdd, m_middleTreeID->getRoot()));
+        m_middleTreeStrength->setRoot(m_middleTreeStrength->insertNodeToTree(strengthNode, m_middleTreeStrength->getRoot()));
+        strengthNode->getData()->setTree('M');
+    }
     evenTeamsTrees();
     setTeamStrength(calcStrength());
     calcAusterity();
@@ -114,8 +114,8 @@ void Team::removeContestantFromChosenTeam(int contestantID, int contestantStreng
     //assumes that the contestant and team found and that the sport identical plus country
     StrengthPairKey key = StrengthPairKey(contestantStrength, contestantID);
     if (m_rightTreeID->getRoot() != nullptr &&m_rightTreeID->findKey(contestantID, m_rightTreeID->getRoot()) ) {
-            m_rightTreeID->setRoot(m_rightTreeID->DeleteNodeFromTree(m_rightTreeID->getRoot(), contestantID));
-            m_rightTreeStrength->setRoot(m_rightTreeStrength->DeleteNodeFromTree(m_rightTreeStrength->getRoot(), key));
+        m_rightTreeID->setRoot(m_rightTreeID->DeleteNodeFromTree(m_rightTreeID->getRoot(), contestantID));
+        m_rightTreeStrength->setRoot(m_rightTreeStrength->DeleteNodeFromTree(m_rightTreeStrength->getRoot(), key));
     }
     if (m_leftTreeID->getRoot() != nullptr && m_leftTreeID->findKey(contestantID, m_leftTreeID->getRoot())) {
         m_leftTreeID->setRoot(m_leftTreeID->DeleteNodeFromTree(m_leftTreeID->getRoot(), contestantID));
@@ -149,7 +149,6 @@ void Team::evenTeamsTrees () {
     leftCount = m_leftTreeID->getNodeCount();
     middleCount = m_middleTreeID->getNodeCount();
     rightCount = m_rightTreeID->getNodeCount();
-
 
 //while trees not even
     while ((max(leftCount, max(middleCount, rightCount)) -
@@ -191,6 +190,7 @@ void Team::evenTeamsTrees () {
             Node<StrengthPairKey,StrengthInfo> *newStrengthNode = new Node<StrengthPairKey,StrengthInfo> (key , strengthNode->getData());
 
             m_leftTreeStrength->setRoot(m_leftTreeStrength->DeleteNodeFromTree(m_leftTreeStrength->getRoot(), key));
+
             m_middleTreeStrength->setRoot(m_middleTreeStrength->insertNodeToTree(newStrengthNode, m_middleTreeStrength->getRoot()));
             leftCount = m_leftTreeID->getNodeCount();
             middleCount = m_middleTreeID->getNodeCount();
@@ -203,8 +203,6 @@ void Team::evenTeamsTrees () {
             Node<int, Contestant> *newMinNode = new Node<int, Contestant>(oldMaxNode->getKey(), oldMaxNode->getData());
 
             m_middleTreeID->setRoot(m_middleTreeID->DeleteNodeFromTree(m_middleTreeID->getRoot(), oldMaxNode->getKey()));
-            m_rightTreeID->setRoot(m_rightTreeID->insertNodeToTree(newMinNode, m_rightTreeID->getRoot()));
-
             m_rightTreeID->setRoot(m_rightTreeID->insertNodeToTree(newMinNode, m_rightTreeID->getRoot()));
 
             StrengthPairKey key = StrengthPairKey(newMinNode->getData()->get_strength(), newMinNode->getKey());
@@ -233,7 +231,7 @@ void Team::evenTeamsTrees () {
 
             m_middleTreeStrength->setRoot(m_middleTreeStrength->DeleteNodeFromTree(m_middleTreeStrength->getRoot(), key));
 
-           m_leftTreeStrength->setRoot(m_leftTreeStrength->insertNodeToTree(newStrengthNode, m_leftTreeStrength->getRoot()));
+            m_leftTreeStrength->setRoot(m_leftTreeStrength->insertNodeToTree(newStrengthNode, m_leftTreeStrength->getRoot()));
             leftCount = m_leftTreeID->getNodeCount();
             middleCount = m_middleTreeID->getNodeCount();
             rightCount = m_rightTreeID->getNodeCount();
@@ -264,8 +262,6 @@ void Team::evenTeamsTrees () {
             Node<int, Contestant> *newMinNode2 = new Node<int, Contestant>(oldMaxNode2->getKey(), oldMaxNode2->getData());
 
             m_middleTreeID->setRoot(m_middleTreeID->DeleteNodeFromTree(m_middleTreeID->getRoot(), oldMaxNode2->getKey()));
-            m_rightTreeID->setRoot(m_rightTreeID->insertNodeToTree(newMinNode2, m_rightTreeID->getRoot()));
-
             m_rightTreeID->setRoot(m_rightTreeID->insertNodeToTree(newMinNode2, m_rightTreeID->getRoot()));
 
             StrengthPairKey key2 = StrengthPairKey(newMinNode2->getData()->get_strength(), newMinNode2->getKey());
@@ -450,8 +446,8 @@ int Team::calcAusTwoAndOneNoProblem(AVLTree<int, Contestant>* IDTreeRemoveTwo,AV
     return AusStrength;
 }
 
-int Team::calcAusTwoAndOneWithProblemMovingLeft(AVLTree<int, Contestant>* IDTreeRemoveTwo,AVLTree<StrengthPairKey, StrengthInfo>* StrengthTreeRemoveTwo,
-                                AVLTree<int, Contestant>* IDTreeRemoveOne,AVLTree<StrengthPairKey, StrengthInfo>* StrengthTreeRemoveOne){
+int Team::calcAusTwoFromRightOneFromMiddle(AVLTree<int, Contestant>* IDTreeRemoveTwo,AVLTree<StrengthPairKey, StrengthInfo>* StrengthTreeRemoveTwo,
+                                           AVLTree<int, Contestant>* IDTreeRemoveOne,AVLTree<StrengthPairKey, StrengthInfo>* StrengthTreeRemoveOne){
 
     // removes min node from two strength tree
     Node<StrengthPairKey, StrengthInfo>* tempNodeStrength1 = StrengthTreeRemoveTwo->getMinOfTree();
@@ -472,7 +468,7 @@ int Team::calcAusTwoAndOneWithProblemMovingLeft(AVLTree<int, Contestant>* IDTree
     IDTreeRemoveTwo->setRoot(IDTreeRemoveTwo->DeleteNodeFromTree(IDTreeRemoveTwo->getRoot(),tempNodeContestant2->getKey() ));
     // done dealing with two tree removal
 
-    //other func - switch to min. removes from tree
+    //remove maxId from mid tree, save min strength after removal
     Node<int, Contestant>* tempNodeContestant3Max = IDTreeRemoveOne->getMaxOfTree();
     Contestant* tempContestant3Max =tempNodeContestant3Max->getData();
     IDTreeRemoveOne->setRoot(IDTreeRemoveOne->DeleteNodeFromTree(IDTreeRemoveOne->getRoot(),tempNodeContestant3Max->getKey() ));
@@ -495,7 +491,6 @@ int Team::calcAusTwoAndOneWithProblemMovingLeft(AVLTree<int, Contestant>* IDTree
     StrengthPairKey strengthPair3Max = StrengthPairKey(tempContestant3Max->get_strength(),tempContestant3Max->get_contestantID());
     Node<StrengthPairKey,StrengthInfo>* newNodeStrength3Max = new Node<StrengthPairKey,StrengthInfo>(strengthPair3Max, tempContestant3Max->getStrengthInfo());
 
-
     IDTreeRemoveOne->setRoot(IDTreeRemoveOne->insertNodeToTree(newNodeContestant3Max, IDTreeRemoveOne->getRoot()));
     StrengthTreeRemoveOne->setRoot(StrengthTreeRemoveOne->insertNodeToTree(newNodeStrength3Max, StrengthTreeRemoveOne->getRoot()));
 
@@ -513,6 +508,9 @@ int Team::calcAusTwoAndOneWithProblemMovingLeft(AVLTree<int, Contestant>* IDTree
     Node<int, Contestant>* tempNodeContestant3Option = IDTreeRemoveOne->findKey(tempStrength3Option->getIdFromInfo(), IDTreeRemoveOne->getRoot());
     Contestant* tempContestant3Option = tempNodeContestant3Option->getData();
     IDTreeRemoveOne->setRoot(IDTreeRemoveOne->DeleteNodeFromTree(IDTreeRemoveOne->getRoot(),tempContestant3Option->get_contestantID() ));
+
+    StrengthPairKey strengthPair3Option = StrengthPairKey(tempContestant3Option->get_strength(),tempContestant3Option->get_contestantID());
+    StrengthTreeRemoveOne->setRoot(StrengthTreeRemoveOne->DeleteNodeFromTree(StrengthTreeRemoveOne->getRoot(),strengthPair3Option));
 
     evenTeamsTrees();
     int AusStrengthOption = calcStrength();
@@ -549,8 +547,8 @@ int Team::calcAusTwoAndOneWithProblemMovingLeft(AVLTree<int, Contestant>* IDTree
 }
 
 
-int Team::calcAusTwoAndOneWithProblemMovingRight(AVLTree<int, Contestant>* IDTreeRemoveTwo,AVLTree<StrengthPairKey, StrengthInfo>* StrengthTreeRemoveTwo,
-                                                 AVLTree<int, Contestant>* IDTreeRemoveOne,AVLTree<StrengthPairKey, StrengthInfo>* StrengthTreeRemoveOne){
+int Team::calcAusTwoFromLeftOneFromMiddle(AVLTree<int, Contestant>* IDTreeRemoveTwo,AVLTree<StrengthPairKey, StrengthInfo>* StrengthTreeRemoveTwo,
+                                          AVLTree<int, Contestant>* IDTreeRemoveOne,AVLTree<StrengthPairKey, StrengthInfo>* StrengthTreeRemoveOne){
 
     // removes min node from two strength tree
     Node<StrengthPairKey, StrengthInfo>* tempNodeStrength1 = StrengthTreeRemoveTwo->getMinOfTree();
@@ -612,6 +610,9 @@ int Team::calcAusTwoAndOneWithProblemMovingRight(AVLTree<int, Contestant>* IDTre
     Node<int, Contestant>* tempNodeContestant3Option = IDTreeRemoveOne->findKey(tempStrength3Option->getIdFromInfo(), IDTreeRemoveOne->getRoot());
     Contestant* tempContestant3Option = tempNodeContestant3Option->getData();
     IDTreeRemoveOne->setRoot(IDTreeRemoveOne->DeleteNodeFromTree(IDTreeRemoveOne->getRoot(),tempContestant3Option->get_contestantID() ));
+
+    StrengthPairKey strengthPair3Option = StrengthPairKey(tempContestant3Option->get_strength(),tempContestant3Option->get_contestantID());
+    StrengthTreeRemoveOne->setRoot(StrengthTreeRemoveOne->DeleteNodeFromTree(StrengthTreeRemoveOne->getRoot(),strengthPair3Option));
 
     evenTeamsTrees();
     int AusStrengthOption = calcStrength();
@@ -693,11 +694,11 @@ void Team::calcAusterity(){
     if (curAusterity > austerityMax){
         austerityMax = curAusterity;
     }
-    curAusterity = calcAusTwoAndOneWithProblemMovingLeft(m_rightTreeID, m_rightTreeStrength, m_middleTreeID, m_middleTreeStrength);
+    curAusterity = calcAusTwoFromRightOneFromMiddle(m_rightTreeID, m_rightTreeStrength, m_middleTreeID, m_middleTreeStrength);
     if (curAusterity > austerityMax){
         austerityMax = curAusterity;
     }
-    curAusterity = calcAusTwoAndOneWithProblemMovingRight(m_leftTreeID, m_leftTreeStrength, m_middleTreeID, m_middleTreeStrength);
+    curAusterity = calcAusTwoFromLeftOneFromMiddle(m_leftTreeID, m_leftTreeStrength, m_middleTreeID, m_middleTreeStrength);
     if (curAusterity > austerityMax){
         austerityMax = curAusterity;
     }

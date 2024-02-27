@@ -1,5 +1,4 @@
 
-
 #ifndef TRY2_COPY_CONTESTANT_H
 #define TRY2_COPY_CONTESTANT_H
 

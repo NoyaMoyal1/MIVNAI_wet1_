@@ -3,7 +3,7 @@
 
 
 Olympics::Olympics() :  m_countryTree(new AVLTree<int, Country>()) ,m_TeamTree(new AVLTree<int, Team>()),
-                       m_contestantTree(new AVLTree<int, Contestant>()){}
+                        m_contestantTree(new AVLTree<int, Contestant>()){}
 
 Olympics::~Olympics(){
 
@@ -11,9 +11,13 @@ Olympics::~Olympics(){
     m_countryTree->deleteAllTreeData(m_countryTree->getRoot());
     m_contestantTree->deleteAllTreeData(m_contestantTree->getRoot());
 
+    /*m_TeamTree->deleteAllTreeNodes(m_TeamTree->getRoot());
+    m_countryTree->deleteAllTreeNodes(m_countryTree->getRoot());
+    m_contestantTree->deleteAllTreeNodes(m_contestantTree->getRoot());*/
+
     delete m_countryTree;
-    delete m_contestantTree;
     delete m_TeamTree;
+    delete m_contestantTree;
 }
 //all done except from try catch
 StatusType Olympics::add_country(int countryId, int medals){
@@ -25,11 +29,13 @@ StatusType Olympics::add_country(int countryId, int medals){
     }
     Country* newCountry = new Country(countryId,medals);
     if(newCountry == nullptr){//not sure
+        delete newCountry;
         return StatusType::ALLOCATION_ERROR;
     }
     Node<int,Country>* node = new Node<int,Country>(countryId);
     if (node == nullptr){
         delete newCountry;
+        delete node;
         return StatusType::ALLOCATION_ERROR;
     }
     node->setData(newCountry);
@@ -48,7 +54,7 @@ StatusType Olympics::remove_country(int countryId){
        || (m_countryTree->findKey(countryId,m_countryTree->getRoot())->getData()->get_numsTeam() != 0)){
         return StatusType::FAILURE;
     }
-    delete (m_countryTree->findKey(countryId,m_countryTree->getRoot()))->getData();
+    delete m_countryTree->findKey(countryId,m_countryTree->getRoot())->getData();
     m_countryTree->findKey(countryId,m_countryTree->getRoot())->setData(nullptr);
     m_countryTree->setRoot(m_countryTree->DeleteNodeFromTree(m_countryTree->getRoot(),countryId));
 
@@ -621,6 +627,7 @@ StatusType Olympics::unite_teams(int teamId1,int teamId2) {
 
     team1->setTeamStrength(team1->calcStrength());
     team1->calcAusterity();
+    delete[] strengthArrayUniteRep;
     return remove_team(teamId2);
 
 }

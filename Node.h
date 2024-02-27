@@ -22,16 +22,7 @@ public:
     //copy constractor
     Node(Node<K, D>* nodePtr): key(nodePtr->key), data(nodePtr->data), left(nodePtr->left), right(nodePtr->right), height(nodePtr->height) {}
 //destructor - when removing template class , first destruct the template and then the node
-    virtual~ Node(){
-        if (left) {
-            delete left;
-            left = nullptr;
-        }
-        if (right) {
-            delete right;
-            right = nullptr;
-        }
-    }
+    virtual~ Node(){}
 
     bool isSameKey (const Node other) const ;
 
@@ -142,33 +133,5 @@ int Node<K,D>::getBalanceFactor() const{
     return 0;//leaf
 }
 
-
-
-/*
-Node<int>* root = new Node<int>(21);
-
-Node<int>* a = new Node<int>(23);
-Node<int>* b = new Node<int>(22);
-Node<int>* c = new Node<int>(19);
-root = root->insertNode(a);
-root = root->insertNode(b);
-root = root->insertNode(c);
-root = root->deleteNode(root,23);
-root->preOrderPrint();
-
-Node<int>* a = new Node<int>(23);
-Node<int>* b = new Node<int>(22);
-Node<int>* c = new Node<int>(19);
-//  root->preOrderPrint();
-
-//root->preOrderPrint();
-root = root->deleteNode(root,23);
-// root->preOrderPrint();
-// root = root->deleteNode(root,7);
-root = root->deleteNode(root,21);
-root->preOrderPrint();
-    return 0;
-    }
-*/
 
 #endif //MIVNAI_WET1_NEW_NODE_H

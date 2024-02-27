@@ -9,6 +9,7 @@ class Country {
     int m_medals;
     int m_numOfTeams;
     int m_numOfContestant;
+
 public:
 //constructor
     Country(int countryID, int medals);

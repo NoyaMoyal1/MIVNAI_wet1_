@@ -23,8 +23,8 @@ void mergeStrength(StrengthInfo** a, int na , StrengthInfo** b, int nb , Strengt
     int ia = 0, ib = 0, ic = 0;
     while (ia < na && ib < nb) {
         if ( ((*(a + ia))->getStrengthFromInfo() < (*(b + ib))->getStrengthFromInfo()) ||
-                ( ( (*(a + ia))->getStrengthFromInfo() == (*(b + ib))->getStrengthFromInfo()) &&
-                        ((*(a + ia))->getIdFromInfo() < (*(b + ib))->getIdFromInfo())) ){
+             ( ( (*(a + ia))->getStrengthFromInfo() == (*(b + ib))->getStrengthFromInfo()) &&
+               ((*(a + ia))->getIdFromInfo() < (*(b + ib))->getIdFromInfo())) ){
             *(c + ic) = *(a + ia);
             ia++;
         } else {

@@ -14,7 +14,6 @@ public:
 
     char getTree();
 
-
     int getIdFromInfo();
 
     void setStrengthFromInfo(int strength);

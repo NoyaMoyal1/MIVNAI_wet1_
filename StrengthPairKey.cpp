@@ -39,4 +39,3 @@ StrengthPairKey& StrengthPairKey::operator=(const StrengthPairKey& newSpk){
     return *this;
 
 }
-
