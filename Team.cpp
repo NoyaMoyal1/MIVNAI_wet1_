@@ -157,7 +157,7 @@ void Team::evenTeamsTrees () {
         if (rightCount > middleCount + 1) {
             // Move the min node from the right tree to the middle tree
             Node<int, Contestant> *oldMinNode = m_rightTreeID->getMinOfTree();
-            Node<int, Contestant> *newMaxNode = new Node<int, Contestant>(oldMinNode->getKey(), oldMinNode->getData());
+            Node<int, Contestant> * newMaxNode = new Node<int, Contestant>(oldMinNode->getKey(), oldMinNode->getData());
 
             m_rightTreeID->setRoot(m_rightTreeID->DeleteNodeFromTree(m_rightTreeID->getRoot(), oldMinNode->getKey()));
 
@@ -165,8 +165,15 @@ void Team::evenTeamsTrees () {
 
             StrengthPairKey key = StrengthPairKey(newMaxNode->getData()->get_strength(), newMaxNode->getKey());
             Node<StrengthPairKey,StrengthInfo> *strengthNode = m_rightTreeStrength->findKey(key, m_rightTreeStrength->getRoot());
-            Node<StrengthPairKey,StrengthInfo> *newStrengthNode = new Node<StrengthPairKey,StrengthInfo> (key , strengthNode->getData());
-
+            Node<StrengthPairKey,StrengthInfo> *newStrengthNode;
+            try{
+                newStrengthNode = new Node<StrengthPairKey,StrengthInfo> (key , strengthNode->getData());
+            }
+            catch (const std::bad_alloc &e)
+            {
+                delete newMaxNode;
+                throw e;
+            }
             m_rightTreeStrength->setRoot(m_rightTreeStrength->DeleteNodeFromTree(m_rightTreeStrength->getRoot(), key));
 
             m_middleTreeStrength->setRoot(m_middleTreeStrength->insertNodeToTree(newStrengthNode, m_middleTreeStrength->getRoot()));
@@ -187,8 +194,15 @@ void Team::evenTeamsTrees () {
 
             StrengthPairKey key = StrengthPairKey(newMinNode->getData()->get_strength(), newMinNode->getKey());
             Node<StrengthPairKey,StrengthInfo> *strengthNode = m_leftTreeStrength->findKey(key, m_leftTreeStrength->getRoot());
-            Node<StrengthPairKey,StrengthInfo> *newStrengthNode = new Node<StrengthPairKey,StrengthInfo> (key , strengthNode->getData());
-
+            Node<StrengthPairKey,StrengthInfo> *newStrengthNode;
+            try{
+                newStrengthNode = new Node<StrengthPairKey,StrengthInfo> (key , strengthNode->getData());
+            }
+            catch (const std::bad_alloc &e)
+            {
+                delete newMinNode;
+                throw e;
+            }
             m_leftTreeStrength->setRoot(m_leftTreeStrength->DeleteNodeFromTree(m_leftTreeStrength->getRoot(), key));
 
             m_middleTreeStrength->setRoot(m_middleTreeStrength->insertNodeToTree(newStrengthNode, m_middleTreeStrength->getRoot()));
@@ -207,8 +221,15 @@ void Team::evenTeamsTrees () {
 
             StrengthPairKey key = StrengthPairKey(newMinNode->getData()->get_strength(), newMinNode->getKey());
             Node<StrengthPairKey,StrengthInfo> *strengthNode = m_middleTreeStrength->findKey(key, m_middleTreeStrength->getRoot());
-            Node<StrengthPairKey,StrengthInfo> *newStrengthNode = new Node<StrengthPairKey,StrengthInfo> (key , strengthNode->getData());
-
+            Node<StrengthPairKey,StrengthInfo> *newStrengthNode;
+            try{
+                newStrengthNode = new Node<StrengthPairKey,StrengthInfo> (key , strengthNode->getData());
+            }
+            catch (const std::bad_alloc &e)
+            {
+                delete newMinNode;
+                throw e;
+            }
             m_middleTreeStrength->setRoot(m_middleTreeStrength->DeleteNodeFromTree(m_middleTreeStrength->getRoot(), key));
             m_rightTreeStrength->setRoot(m_rightTreeStrength->insertNodeToTree(newStrengthNode, m_rightTreeStrength->getRoot()));
             leftCount = m_leftTreeID->getNodeCount();
@@ -227,7 +248,15 @@ void Team::evenTeamsTrees () {
 
             StrengthPairKey key = StrengthPairKey(newMaxNode->getData()->get_strength(), newMaxNode->getKey());
             Node<StrengthPairKey,StrengthInfo> *strengthNode = m_middleTreeStrength->findKey(key, m_middleTreeStrength->getRoot());
-            Node<StrengthPairKey,StrengthInfo> *newStrengthNode = new Node<StrengthPairKey,StrengthInfo> (key , strengthNode->getData());
+            Node<StrengthPairKey,StrengthInfo> *newStrengthNode;
+            try{
+                newStrengthNode = new Node<StrengthPairKey,StrengthInfo> (key , strengthNode->getData());
+            }
+            catch (const std::bad_alloc &e)
+            {
+                delete newMaxNode;
+                throw e;
+            }
 
             m_middleTreeStrength->setRoot(m_middleTreeStrength->DeleteNodeFromTree(m_middleTreeStrength->getRoot(), key));
 
@@ -252,21 +281,49 @@ void Team::evenTeamsTrees () {
 
             StrengthPairKey key = StrengthPairKey(newMinNode->getData()->get_strength(), newMinNode->getKey());
             Node<StrengthPairKey,StrengthInfo> *strengthNode = m_leftTreeStrength->findKey(key, m_leftTreeStrength->getRoot());
-            Node<StrengthPairKey,StrengthInfo> *newStrengthNode = new Node<StrengthPairKey,StrengthInfo> (key , strengthNode->getData());
+            Node<StrengthPairKey,StrengthInfo> *newStrengthNode;
+            try{
+                newStrengthNode = new Node<StrengthPairKey,StrengthInfo> (key , strengthNode->getData());
+            }
+            catch (const std::bad_alloc &e)
+            {
+                delete newMinNode;
+                throw e;
+            }
 
             m_leftTreeStrength->setRoot(m_leftTreeStrength->DeleteNodeFromTree(m_leftTreeStrength->getRoot(), key));
             m_middleTreeStrength->setRoot(m_middleTreeStrength->insertNodeToTree( newStrengthNode,m_middleTreeStrength->getRoot()));
 
             // Move the max node from the middle tree to the right tree
             Node<int, Contestant> *oldMaxNode2 = m_middleTreeID->getMaxOfTree();
-            Node<int, Contestant> *newMinNode2 = new Node<int, Contestant>(oldMaxNode2->getKey(), oldMaxNode2->getData());
+            Node<int, Contestant> *newMinNode2;
+            try{
+                newMinNode2 = new Node<int, Contestant>(oldMaxNode2->getKey(), oldMaxNode2->getData());
+            }
+            catch (const std::bad_alloc &e)
+            {
+                delete newStrengthNode;
+                delete newMinNode;
+                throw e;
+            }
 
             m_middleTreeID->setRoot(m_middleTreeID->DeleteNodeFromTree(m_middleTreeID->getRoot(), oldMaxNode2->getKey()));
             m_rightTreeID->setRoot(m_rightTreeID->insertNodeToTree(newMinNode2, m_rightTreeID->getRoot()));
 
             StrengthPairKey key2 = StrengthPairKey(newMinNode2->getData()->get_strength(), newMinNode2->getKey());
             Node<StrengthPairKey,StrengthInfo> *strengthNode2 = m_middleTreeStrength->findKey(key2, m_middleTreeStrength->getRoot());
-            Node<StrengthPairKey,StrengthInfo> *newStrengthNode2 = new Node<StrengthPairKey,StrengthInfo> (key2 , strengthNode2->getData());
+            Node<StrengthPairKey,StrengthInfo> *newStrengthNode2;
+            try{
+                newStrengthNode2 = new Node<StrengthPairKey,StrengthInfo> (key2 , strengthNode2->getData());
+            }
+            catch (const std::bad_alloc &e)
+            {
+                delete newMinNode2;
+                delete newStrengthNode;
+                delete newMinNode;
+                throw e;
+            }
+
 
             m_middleTreeStrength->setRoot(m_middleTreeStrength->DeleteNodeFromTree(m_middleTreeStrength->getRoot(), key2));
             m_rightTreeStrength->setRoot(m_rightTreeStrength->insertNodeToTree(newStrengthNode2, m_rightTreeStrength->getRoot()));
@@ -291,7 +348,15 @@ void Team::evenTeamsTrees () {
 
             StrengthPairKey key2 = StrengthPairKey(newMaxNode2->getData()->get_strength(), newMaxNode2->getKey());
             Node<StrengthPairKey,StrengthInfo> *strengthNode2 = m_rightTreeStrength->findKey(key2, m_rightTreeStrength->getRoot());
-            Node<StrengthPairKey,StrengthInfo> *newStrengthNode2 = new Node<StrengthPairKey,StrengthInfo> (key2 , strengthNode2->getData());
+            Node<StrengthPairKey,StrengthInfo> *newStrengthNode2;
+            try{
+                newStrengthNode2 = new Node<StrengthPairKey,StrengthInfo> (key2 , strengthNode2->getData());
+            }
+            catch (const std::bad_alloc &e)
+            {
+                delete newMaxNode2;
+                throw e;
+            }
 
             m_rightTreeStrength->setRoot(m_rightTreeStrength->DeleteNodeFromTree(m_rightTreeStrength->getRoot(), key2));
             m_middleTreeStrength->setRoot(m_middleTreeStrength->insertNodeToTree( newStrengthNode2,m_middleTreeStrength->getRoot()));
@@ -299,14 +364,33 @@ void Team::evenTeamsTrees () {
 
             // Move the min node from the middle tree to the left tree
             Node<int, Contestant> *oldMinNode = m_middleTreeID->getMinOfTree();
-            Node<int, Contestant> *newMaxNode = new Node<int, Contestant>(oldMinNode->getKey(), oldMinNode->getData());
+            Node<int, Contestant> *newMaxNode;
+            try{
+                newMaxNode = new Node<int, Contestant>(oldMinNode->getKey(), oldMinNode->getData());
+            }
+            catch (const std::bad_alloc &e)
+            {
+                delete newStrengthNode2;
+                delete newMaxNode2;
+                throw e;
+            }
 
             m_middleTreeID->setRoot(m_middleTreeID->DeleteNodeFromTree(m_middleTreeID->getRoot(), oldMinNode->getKey()));
             m_leftTreeID->setRoot(m_leftTreeID->insertNodeToTree(newMaxNode, m_leftTreeID->getRoot()));
 
             StrengthPairKey key = StrengthPairKey(newMaxNode->getData()->get_strength(), newMaxNode->getKey());
             Node<StrengthPairKey,StrengthInfo> *strengthNode = m_middleTreeStrength->findKey(key, m_middleTreeStrength->getRoot());
-            Node<StrengthPairKey,StrengthInfo> *newStrengthNode = new Node<StrengthPairKey,StrengthInfo> (key , strengthNode->getData());
+            Node<StrengthPairKey,StrengthInfo> *newStrengthNode;
+            try{
+                newStrengthNode = new Node<StrengthPairKey,StrengthInfo> (key , strengthNode->getData());
+            }
+            catch (const std::bad_alloc &e)
+            {
+                delete newMaxNode;
+                delete newStrengthNode2;
+                delete newMaxNode2;
+                throw e;
+            }
 
             m_middleTreeStrength->setRoot(m_middleTreeStrength->DeleteNodeFromTree(m_middleTreeStrength->getRoot(), key));
             m_leftTreeStrength->setRoot(m_leftTreeStrength->insertNodeToTree(newStrengthNode, m_leftTreeStrength->getRoot()));
@@ -326,15 +410,6 @@ void Team::increaseNumOfContestants(){
 void Team::decreaseNumOfContestants(){
     m_numOfContestant--;
 }
-
-
-//int Team::calcAusterity1();
-/*
-void Team::calcAusterity(){
-    int strength1 = calcAusterity1();
-}
- */
-
 
 int Team::calcAusThreeFromOneTree(AVLTree<int, Contestant>* IDTreeRemove,AVLTree<StrengthPairKey, StrengthInfo>* StrengthTreeRemove){
 
@@ -367,16 +442,66 @@ int Team::calcAusThreeFromOneTree(AVLTree<int, Contestant>* IDTreeRemove,AVLTree
     int AusStrength = calcStrength();
 
     Node<int, Contestant>* newNodeContestant1 = new Node<int, Contestant>(tempContestant1->get_contestantID(), tempContestant1);
-    Node<int, Contestant>* newNodeContestant2 = new Node<int, Contestant>(tempContestant2->get_contestantID(), tempContestant2);
-    Node<int, Contestant>* newNodeContestant3 = new Node<int, Contestant>(tempContestant3->get_contestantID(), tempContestant3);
+    Node<int, Contestant>* newNodeContestant2;
+    Node<int, Contestant>* newNodeContestant3;
+    try{
+        newNodeContestant2 = new Node<int, Contestant>(tempContestant2->get_contestantID(), tempContestant2);
+    }
+    catch (const std::bad_alloc &e)
+    {
+        delete newNodeContestant1;
+        throw e;
+    }
+    try{
+        newNodeContestant3 = new Node<int, Contestant>(tempContestant3->get_contestantID(), tempContestant3);
+    }
+    catch (const std::bad_alloc &e)
+    {
+        delete newNodeContestant2;
+        delete newNodeContestant1;
+        throw e;
+    }
 
     StrengthPairKey strengthPair1 = StrengthPairKey(tempStrength1->getStrengthFromInfo(),tempStrength1->getIdFromInfo());
     StrengthPairKey strengthPair2 = StrengthPairKey(tempStrength2->getStrengthFromInfo(),tempStrength2->getIdFromInfo());
     StrengthPairKey strengthPair3 = StrengthPairKey(tempStrength3->getStrengthFromInfo(),tempStrength3->getIdFromInfo());
 
-    Node<StrengthPairKey,StrengthInfo>* newNodeStrength1 = new Node<StrengthPairKey,StrengthInfo>(strengthPair1, tempStrength1);
-    Node<StrengthPairKey,StrengthInfo>* newNodeStrength2 = new Node<StrengthPairKey,StrengthInfo>(strengthPair2, tempStrength2);
-    Node<StrengthPairKey,StrengthInfo>* newNodeStrength3 = new Node<StrengthPairKey,StrengthInfo>(strengthPair3, tempStrength3);
+    Node<StrengthPairKey,StrengthInfo>* newNodeStrength1;
+    Node<StrengthPairKey,StrengthInfo>* newNodeStrength2;
+    Node<StrengthPairKey,StrengthInfo>* newNodeStrength3;
+    try{
+        newNodeStrength1 = new Node<StrengthPairKey,StrengthInfo>(strengthPair1, tempStrength1);
+    }
+    catch (const std::bad_alloc &e)
+    {
+        delete newNodeContestant3;
+        delete newNodeContestant2;
+        delete newNodeContestant1;
+        throw e;
+    }
+    try{
+        newNodeStrength2 = new Node<StrengthPairKey,StrengthInfo>(strengthPair2, tempStrength2);
+    }
+    catch (const std::bad_alloc &e)
+    {
+        delete newNodeStrength1;
+        delete newNodeContestant3;
+        delete newNodeContestant2;
+        delete newNodeContestant1;
+        throw e;
+    }
+    try{
+        newNodeStrength3 = new Node<StrengthPairKey,StrengthInfo>(strengthPair3, tempStrength3);
+    }
+    catch (const std::bad_alloc &e)
+    {
+        delete newNodeStrength2;
+        delete newNodeStrength1;
+        delete newNodeContestant3;
+        delete newNodeContestant2;
+        delete newNodeContestant1;
+        throw e;
+    }
 
     IDTreeRemove->setRoot(IDTreeRemove->insertNodeToTree(newNodeContestant1, IDTreeRemove->getRoot()));
     IDTreeRemove->setRoot(IDTreeRemove->insertNodeToTree(newNodeContestant2, IDTreeRemove->getRoot()));
@@ -422,7 +547,13 @@ int Team::calcAusTwoAndOneNoProblem(AVLTree<int, Contestant>* IDTreeRemoveTwo,AV
     evenTeamsTrees();
     int AusStrength = calcStrength();
 
+    Node<int, Contestant>* newNodeContestant2;
+    Node<int, Contestant>* newNodeContestant3;
+
     Node<int, Contestant>* newNodeContestant1 = new Node<int, Contestant>(tempContestant1->get_contestantID(), tempContestant1);
+    try{
+        ??????????????????????????????????????????????????????????????????????????????????????????????????????????/
+    }
     Node<int, Contestant>* newNodeContestant2 = new Node<int, Contestant>(tempContestant2->get_contestantID(), tempContestant2);
     Node<int, Contestant>* newNodeContestant3 = new Node<int, Contestant>(tempContestant3->get_contestantID(), tempContestant3);
 
